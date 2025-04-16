@@ -1,0 +1,92 @@
+ sp.createStreamProcessor('race2', [
+        { $source: {
+            connectionName: 'db1',
+            db: 'test',
+            coll: 'race_events_raw', 
+            timeField : { $dateFromString : { "dateString" : "$fullDocument.timestamp"} },
+        }},
+        {
+            $replaceRoot: { newRoot : "$fullDocument"}
+         },
+        { $validate: {
+            validator: {
+                $and: [
+                    {$expr: {
+                        $ne: [
+                        "$Racer_Name",
+                        "Pace Car"
+                        ]
+                    }},
+                    {$jsonSchema: {
+                        required: [ "Racer_Num", "Racer_Name", "lap", "Corner_Num", "timestamp" ],
+                        properties: {
+                            Racer_Num: {
+                                bsonType: "int",
+                                description: "'Racer_Num' is the integer number of the race car and is required"
+                            },
+                            Racer_Name: {
+                             bsonType: "string",
+                                description: "'Racer_Name' must be a string and is required"
+                            },
+                            lap: {
+                                bsonType: "int",
+                                minimum: 1,
+                                description: "'lap' must be a int and is required"
+                            },
+                            Corner_Num: {
+                                bsonType: "int",
+                                minimum: 1,
+                                maximum: 4,
+                                description: "'Corner_Num' must be a int between 1 and 4 and is required"
+                            },
+                            timestamp: {
+                                bsonType: "string",
+                                pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}$",
+                                description: "'timestamp' must be a string matching iso date pattern and is required"
+                            }
+                            }
+                        }
+                    }
+                ]
+            }, validationAction : "dlq"
+          }} ,
+        { 
+            $tumblingWindow: {
+                interval: {size: NumberInt(30), unit: "second"},
+                "pipeline": [ 
+                    {
+                        $group: {
+                            "_id" : { "Racer_Num" : "$Racer_Num", "Racer_Name" : "$Racer_Name"},
+                            "racer_status" : { $top: {
+                                   output: [ "$lap","$Corner_Num","$timestamp"],
+                                   sortBy: { "lap": -1, "Corner_Num" : -1, "timestamp": 1 }
+                                } }   
+                        }
+                    },
+                    {
+                        $project: {
+                          "_id" : "$_id.Racer_Num",
+                          "Racer_Name" : "$_id.Racer_Name",
+                          "Racer_Num" : "$_id.Racer_Num",
+                          "Lap" : { $arrayElemAt : ["$racer_status", 0]},
+                          "Corner" : { $arrayElemAt : ["$racer_status", 1]},
+                          "Last_Update" : { $dateFromString : { "dateString" : { $arrayElemAt : ["$racer_status", 2]} } }
+                        }
+                     },
+                     {
+                        $sort : {
+                            "Lap" : -1, "Corner" : -1, "Last_Update" : 1
+                        }
+                     }
+                ],
+             } 
+         },
+         {$merge: {
+            into: {
+                connectionName: "db2",
+                db: "test",
+                coll: "racetest2"},
+                on: ["Racer_Num"]
+            
+        }}
+        ], {dlq: {connectionName: "dlq1", db: "test", coll: "dlq_db_race_events_raw"}})

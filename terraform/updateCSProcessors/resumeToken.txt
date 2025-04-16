@@ -1,0 +1,7 @@
+{
+  "token": {
+    "sensitive": false,
+    "type": "string",
+    "value": "{\"changeStreamState\":{\"_data\":\"8266E3105B000000012B0429296E1404\"},\"changeStreamTimeDifferenceSecs\":0,\"dlqMessageCount\":0,\"dlqMessageSize\":0,\"inputMessageCount\":5,\"inputMessageSize\":2355,\"memoryTrackerBytes\":0,\"name\":\"cstftest\",\"ok\":1,\"operatorStats\":[{\"dlqMessageCount\":0,\"dlqMessageSize\":0,\"executionTimeSecs\":0,\"inputMessageCount\":5,\"inputMessageSize\":2355,\"maxMemoryUsage\":471,\"name\":\"ChangeStreamConsumerOperator\",\"outputMessageCount\":5,\"outputMessageSize\":0,\"stateSize\":0,\"timeSpentMillis\":0},{\"dlqMessageCount\":0,\"dlqMessageSize\":0,\"executionTimeSecs\":0,\"inputMessageCount\":5,\"inputMessageSize\":3555,\"maxMemoryUsage\":0,\"name\":\"MergeOperator\",\"outputMessageCount\":5,\"outputMessageSize\":6515,\"stateSize\":0,\"timeSpentMillis\":8}],\"outputMessageCount\":5,\"outputMessageSize\":6515,\"processorId\":\"66e31038f14a14d8ace7a021\",\"scaleFactor\":1,\"stateSize\":0,\"status\":\"running\"}"
+  }
+}

@@ -1,0 +1,55 @@
+use silver
+db.createCollection('superdoc')
+db.superdoc.createIndex({"dc_log_id": 1}, {unique: true})
+
+use bronze
+db.ST001.insertOne({"dc_log_id" : 101, "f1" : "v1", "f2" : 1})
+db.ST999.insertOne({"dc_log_id" : 101, "f1" : "v1", "f2" : 1})
+db.ST001.insertOne({"dc_log_id" : 101, "f1" : "v2", "f2" : 2, "f3" : 1})
+db.ST001.insertOne({"dc_log_id" : 101, "f1" : "v3", "f2" : 3})
+
+
+db.ST001.deleteOne( { "dc_log_id" : 101 } )
+
+// CREATES AND UPDATES
+// Remove Deletes
+// Dynamicly create field key and replace root, add dc_log_id to root
+// MERGE not REPLACE output
+s = {
+  $source:  {
+      connectionName: 'jsncluster0',
+      db: 'bronze',
+      config : {
+        fullDocument: 'whenAvailable',
+                },
+  }
+}
+
+m = {$match : {
+    $expr: {
+                    $ne: [
+                    "$operationType",
+                    "delete"
+                    ]
+}}}
+
+rr = {
+  $replaceRoot: {
+     newRoot: { $mergeObjects: [ {$arrayToObject: [ [ { k: "$ns.coll", v: "$fullDocument" } ] ]}, {"dc_log_id":"$fullDocument.dc_log_id"}]}
+  }
+}
+
+merge = {
+  $merge: {
+      into: {
+          connectionName: 'jsncluster0',
+          db: 'silver',
+          coll: 'superdoc'
+      },
+      on: ['dc_log_id'],
+      whenMatched: 'merge',
+      whenNotMatched: 'insert'
+  }
+}
+
+sp.process([s,m,rr,merge])

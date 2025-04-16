@@ -1,0 +1,40 @@
+
+
+     sp.createStreamProcessor('packet1', [
+        { $source: {
+            connectionName: 'kafka1',
+            topic: 'packet_data_topic',
+            timeField : {  $toDate : { $multiply: [ "$timestamp" , 1000]}},
+        }},
+        {
+            $tumblingWindow: {
+                interval: {size: NumberInt(300), unit: "second"},
+                pipeline: [
+                    { $group : {
+                        "_id" : {"src_ip" : "$src_ip", "dst_ip" : "$dst_ip", "src_port" : "$src_port", "dst_port" : "$dst_port"  },
+                        min_ts : { $min : "$timestamp"},
+                        max_ts : {$max : "$timestamp"}, 
+                        avg_ts : {$avg : "$timestamp"},
+                        count : { $count : {}}
+                
+                    }}
+                    ,{ $project: { 
+                        _id : 0,
+                        src_ip: "$_id.src_ip", 
+                        dst_ip: "$_id.dst_ip",
+                        src_port: "$_id.src_port", 
+                        dst_port: "$_id.dst_port",
+                        min_ts : {  $toDate : { $multiply: [ "$min_ts" , 1000]}},
+                        max_ts : {  $toDate : { $multiply: [ "$max_ts" , 1000]}},
+                        avg_ts : {  $toDate : { $multiply: [ "$avg_ts" , 1000]}},
+                        count : 1
+                        }
+                    },
+                    {$sort : {count : -1} }
+                ]
+            }
+        },
+        {$emit: {"connectionName" : "__testLog" }}
+    ])
+
+    sp.packet1.start()

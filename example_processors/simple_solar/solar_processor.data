@@ -1,0 +1,163 @@
+Required to have mongosh 2.0+
+https://www.mongodb.com/try/download/shell
+
+var source_name = 'sample_stream_solar'
+var cluster_name = 'jsncluster0'
+var cluster_db = 'test'
+var cluster_data_coll = 'solardata'
+var cluster_dlq_db = 'test'
+var cluster_dlq_coll = 'solar_dlq'
+
+s =  {
+              $source: {
+                connectionName: 'sample_stream_solar',
+                timeField: { $dateFromString: { dateString: '$timestamp' }}
+            }
+        }
+
+sp.process([s])
+
+
+ma =   { $match: {
+                $expr: {
+                                $ne: [
+                                "$device_id",
+                                "device_8"
+                                ]
+       }}}
+                          
+              
+
+sp.process([s,ma])
+
+v1 = { $validate: {
+                validator: {$jsonSchema: {
+                            required: [ "device_id", "timestamp", "obs", "event_type"],
+                            not : {required : ["event_details"]},
+                            properties: {
+                                device_id: {
+                                    bsonType: "string",
+                                    pattern: "^device_\\d+",
+                                    description: "device_id is required and must be like device_#"
+                                },
+                                obs: {
+                                    bsonType: "object",
+                                    required: [ "watts", "temp" ],
+                                    properties:{
+                                        watts : {
+                                            bsonType : "int",
+                                            minimum: 0,
+                                            maximum: 500,
+                                            description: "'obs.watts' is required and cannot be less then 0 or more then 250"
+                                        },
+                                        temp : {
+                                             bsonType: "int",
+                                             description: "'obs.temp' must be an integer"
+                                        },
+                                     }
+                                    },
+                                    event_type : {
+                                         bsonType: "int",
+                                            minimum: 0,
+                                            maximum: 1,
+                                    },
+                                timestamp: {
+                                    bsonType: "string",
+                                    description: "'timestamp' must be a string "
+                                }
+                              }
+                            }
+                            }
+                            , validationAction : "discard"}}
+sp.process([s,v1])
+
+  v2 =       { $validate: {
+                validator:  {
+                    $and: [
+                            {$expr: {
+                                $ne: [
+                                "$device_id",
+                                "device_8"
+                                ]
+                            }},
+                            {$jsonSchema: {
+                            required: [ "device_id", "timestamp", "obs", "event_type" ],
+                            not : {required : ["event_details"]},
+                            properties: {
+                                device_id: {
+                                    bsonType: "string",
+                                    pattern: "^device_\\d+",
+                                    description: "device_id is required and must be like device_#"
+                                },
+                                obs: {
+                                    bsonType: "object",
+                                    required: [ "watts", "temp" ],
+                                    properties:{
+                                        watts : {
+                                            bsonType : "int",
+                                            minimum: 0,
+                                            maximum: 250,
+                                            description: "'obs.watts' is required and cannot be less then 0 or more then 250"
+                                        },
+                                        temp : {
+                                             bsonType: "int",
+                                             description: "'obs.temp' must be an integer"
+                                        },
+                                     }
+                                    },
+                                    event_type : {
+                                         bsonType: "int",
+                                            minimum: 0,
+                                            maximum: 1,
+                                    },
+                                timestamp: {
+                                    bsonType: "string",
+                                    description: "'timestamp' must be a string "
+                                }
+                              }
+                            }
+                            }
+                    ]
+                            },    validationAction : "dlq"}}
+
+sp.process([s,v2])
+
+  w =       { $tumblingWindow: {
+                interval: {size: NumberInt(10), unit: "second"},
+                        "pipeline": [ 
+                            {
+                                $group: {
+                                    "_id" : { "device_id" : "$device_id"}, 
+                                    max_temp :  { $max : "$obs.temp"},
+                                    max_watts :  { $max : "$obs.watts"},
+                                    min_watts : { $min : "$obs.watts"},
+                                    avg_watts :  { $avg : "$obs.watts"},
+                                    median_watts : { $median :{
+                                                    input: "$obs.watts",
+                                                    method: "approximate"
+                                                  } }                                      
+                                }
+                            }
+                        ],
+                     } 
+                 }
+
+sp.process([s,v2,w])
+
+m =        {$merge: {
+            into: {
+                connectionName: cluster_name,
+                db: cluster_db,
+                coll: cluster_data_coll},
+                on: ["_id"]
+            
+        }}
+
+dlq = {dlq: {connectionName: cluster_name, db: cluster_dlq_db, coll: cluster_dlq_coll}}
+
+sp.createStreamProcessor('solardemo',[s,v2,w,m],dlq)
+sp.solardemo.start()
+sp.solardemo.sample()
+sp.solardemo.stats()
+sp.solardemo.stop()
+sp.solardemo.drop()

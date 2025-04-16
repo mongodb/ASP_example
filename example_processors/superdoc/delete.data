@@ -1,0 +1,85 @@
+//##########
+// DELETES WITHOUT $FUNCTION
+// Match only deletes, 
+// Lookup current record,
+// unproject delete field
+// REPLACE and not MERGE
+/*
+ ns: {
+    db: 'bronze',
+    coll: 'ST001'
+  },
+  documentKey: {
+    _id: ObjectId("656de44a992e972355620541")
+  }
+  */
+
+  db.ST001.insertOne({"dc_log_id" : 101, "f1" : "v3", "f2" : 3})
+  db.ST001.deleteOne( { "dc_log_id" : 101 } )
+  
+  s = {
+      $source:  {
+          connectionName: 'jsncluster0',
+          db: 'bronze',
+          config : {
+            fullDocument: 'whenAvailable',
+            fullDocumentBeforeChange: 'whenAvailable',
+          },    
+    }
+}
+    
+    m = {$match : {
+        $expr: {
+                        $eq: [
+                        "$operationType",
+                        "delete"
+                        ]
+    }}}
+  
+    l = {
+      $lookup: {
+          from: {
+              connectionName: 'jsncluster0',
+              db: 'silver',
+              coll: 'superdoc'
+          },
+          localField: "fullDocumentBeforeChange.dc_log_id",
+          foreignField: "dc_log_id",
+          as: 'orig_doc',
+      }
+  }
+  
+  newDoc = {$addFields : { newDoc : {$objectToArray: {$arrayElemAt: [ "$orig_doc", 0 ] }}}}
+  
+  testDoc = { "$addFields": { testDoc: {
+          "$filter": {
+            "input": "$newDoc",
+            "as": "newDoc",
+            "cond": {
+              $ne: [
+                "$$newDoc.k",
+                "$ns.coll"
+              ]
+            }}}}}
+  
+  repairDoc = {$addFields : {repairDoc : { $arrayToObject : "$testDoc"}}}
+  
+  rr = {
+      $replaceRoot: {newRoot: '$repairDoc'}
+  }
+    
+  
+  merge = {
+      $merge: {
+          into: {
+              connectionName: 'jsncluster0',
+              db: 'silver',
+              coll: 'superdoc'
+          },
+          on: ['dc_log_id'],
+          whenMatched: 'replace',
+          whenNotMatched: 'discard'
+      }
+    }
+  
+    sp.process([s,m,l,newDoc,testDoc,repairDoc,rr,merge])

@@ -1,0 +1,63 @@
+//Kafka Topic Data
+{ "id" : 1,"phone" : "123-123-1234"}
+{ "id" : 1,"email" : "john@doe.com"}
+{ "id" : 1, "state" : "FL"}
+
+{ "id" : 2, "phone" : "987-987-9876"}
+{ "id" : 2, "email" : "jane@doe.com"}
+{ "id" : 2, "state" : "GA"}
+
+
+//Stream Processor using Kafka Message Timestamp for the Windowing Water Mark
+{$source: {
+    connectionName: 'kafka1',
+    topic: 'contact_cdc',
+    partitionCount: NumberInt(1),
+}},
+{ 
+    $tumblingWindow: {
+        interval: {size: NumberInt(60), unit: "second"},
+        "pipeline": [ 
+                {$group: {_id : "$id",
+                    phone: {$top : { output : ["$phone"],  sortBy : { "phone" : -1 }}},
+                    email: {$top : { output : ["$email"], sortBy : { "email" : -1 }}},
+                    state: {$top : { output : ["$state"], sortBy : { "state" : -1 }}}
+                    }},
+                {$project : {
+                        _id :1,
+                        phone : {$arrayElemAt : ["$phone" ,0]},
+                        email :  {$arrayElemAt : ["$email" ,0]},
+                        state : {$arrayElemAt : ["$state" ,0]},
+                    }}
+                ]
+            }
+},
+{ $emit: {
+        connectionName: 'kafka1',
+        topic: 'accumulated_contacts',
+}}
+
+
+//Output of Windowed Data
+{
+  _id: 2,
+  phone: '987-987-9876',
+  email: 'jane@doe.com',
+  state: 'GA',
+  _stream_meta: {
+    sourceType: 'kafka',
+    windowStartTimestamp: 2023-05-18T22:18:00.000Z,
+    windowEndTimestamp: 2023-05-18T22:19:00.000Z
+  }
+}
+{
+  _id: 1,
+  phone: '123-123-1234',
+  email: 'john@doe.com',
+  state: 'FL',
+  _stream_meta: {
+    sourceType: 'kafka',
+    windowStartTimestamp: 2023-05-18T22:18:00.000Z,
+    windowEndTimestamp: 2023-05-18T22:19:00.000Z
+  }
+}

@@ -1,0 +1,108 @@
+Just an example of the Kafka Metadata that is currently included
+
+{
+.......
+  },
+  _ts: ISODate('2024-07-23T16:04:05.377Z'),
+  _stream_meta: {
+    source: {
+      type: 'kafka',
+      topic: 'topic_2',
+      partition: 4,
+      offset: 1,
+      key: Binary.createFromBase64('MTg=', 0)
+    }
+  }
+}
+
+
+
+{
+  ok: 1,
+  ns: '6595a3c08b72ce425e082f0f.65094f059e0776665611598b.kafkametrics',
+  stats: {
+    name: 'kafkametrics',
+    processorId: '669fd3f38b99391571004133',
+    status: 'running',
+    scaleFactor: Long('1'),
+    inputMessageCount: Long('1'),
+    inputMessageSize: 124,
+    outputMessageCount: Long('1'),
+    outputMessageSize: 1012,
+    dlqMessageCount: Long('0'),
+    dlqMessageSize: 0,
+    stateSize: 0,
+    memoryTrackerBytes: 0,
+    operatorStats: [
+      {
+        name: 'KafkaConsumerOperator',
+        inputMessageCount: Long('1'),
+        inputMessageSize: 124,
+        outputMessageCount: Long('1'),
+        outputMessageSize: 0,
+        dlqMessageCount: Long('0'),
+        dlqMessageSize: 0,
+        stateSize: 0,
+        maxMemoryUsage: 0,
+        executionTimeSecs: Long('0')
+      },
+      {
+        name: 'KafkaEmitOperator',
+        inputMessageCount: Long('1'),
+        inputMessageSize: 248,
+        outputMessageCount: Long('1'),
+        outputMessageSize: 1012,
+        dlqMessageCount: Long('0'),
+        dlqMessageSize: 0,
+        stateSize: 0,
+        maxMemoryUsage: 0,
+        executionTimeSecs: Long('0')
+      }
+    ],
+    kafkaPartitions: [
+      {
+        partition: 0,
+        currentOffset: Long('3'),
+        checkpointOffset: Long('3'),
+        partitionOffsetLag: Long('0')
+      },
+      {
+        partition: 1,
+        currentOffset: Long('3'),
+        checkpointOffset: Long('3'),
+        partitionOffsetLag: Long('0')
+      },
+      {
+        partition: 2,
+        currentOffset: Long('4'),
+        checkpointOffset: Long('4'),
+        partitionOffsetLag: Long('0')
+      },
+      {
+        partition: 3,
+        currentOffset: Long('4'),
+        checkpointOffset: Long('4'),
+        partitionOffsetLag: Long('0')
+      },
+      {
+        partition: 4,
+        currentOffset: Long('2'),
+        checkpointOffset: Long('1'),
+        partitionOffsetLag: Long('0')
+      },
+      {
+        partition: 5,
+        currentOffset: Long('3'),
+        checkpointOffset: Long('3'),
+        partitionOffsetLag: Long('0')
+      }
+    ],
+    kafkaTotalOffsetLag: Long('0'),
+    ok: 1
+  },
+  pipeline: [
+    { '$source': { connectionName: 'ccloud', topic: 'topic_2' } },
+    { '$emit': { connectionName: 'ccloud', topic: 'emit_test' } }
+  ]
+}
+AtlasStreamProcessing> 

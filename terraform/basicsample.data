@@ -1,0 +1,70 @@
+#docs
+https://registry.terraform.io/providers/mongodb/mongodbatlas/latest/docs/resources/stream_instance
+https://registry.terraform.io/providers/mongodb/mongodbatlas/latest/docs/resources/stream_connection
+https://github.com/mongodb/terraform-provider-mongodbatlas/tree/master/examples/atlas-streams
+https://www.mongodb.com/docs/atlas/configure-api-access/#create-an-api-key-in-an-organization  
+
+# CLI COMMANDS
+export MONGODB_ATLAS_ENABLE_BETA=true
+export TF_VAR_MONGODB_ATLAS_PUBLIC_KEY=""
+export TF_VAR_MONGODB_ATLAS_PRIVATE_KEY=""
+export TF_VAR_MONGODB_ATLAS_PROJECT_ID=""
+export TF_VAR_MONGODB_ATLAS_INSTANCE_NAME=""
+
+#import things
+terraform import mongodbatlas_stream_instance.test {project_ID}-{SPI_Name}
+terraform import mongodbatlas_stream_connection.test {SPI_Name}-{project_ID}-{connection_Name}
+
+
+# Terraform file for SPI and Atlas Connection
+terraform {
+  required_providers {
+    mongodbatlas = {
+      source  = "mongodb/mongodbatlas",
+      version = "1.14.0"
+    }
+  }
+}
+
+# variables to import (from exported values)
+variable "MONGODB_ATLAS_PUBLIC_KEY" {
+  type = string
+}
+
+variable "MONGODB_ATLAS_PRIVATE_KEY" {
+  type = string
+}
+
+variable "MONGODB_ATLAS_PROJECT_ID" {
+  type = string
+}
+
+variable "MONGODB_ATLAS_INSTANCE_NAME" {
+  type = string
+}
+
+# Configure the MongoDB Atlas Provider
+provider "mongodbatlas" {
+  public_key = var.MONGODB_ATLAS_PUBLIC_KEY
+  private_key  = var.MONGODB_ATLAS_PRIVATE_KEY
+}
+
+# Create the resources
+#SPI
+resource "mongodbatlas_stream_instance" "spitest" {
+    project_id = var.MONGODB_ATLAS_PROJECT_ID
+    instance_name = var.MONGODB_ATLAS_INSTANCE_NAME
+    data_process_region = {
+        region = "VIRGINIA_USA"
+        cloud_provider = "AWS"
+  }
+}
+
+# Atlas Connection
+resource "mongodbatlas_stream_connection" "conntest" {
+    project_id = var.MONGODB_ATLAS_PROJECT_ID
+    instance_name = var.MONGODB_ATLAS_INSTANCE_NAME
+    connection_name = "jsncluster0"
+    type = "Cluster"
+    cluster_name = "jsncluster0"
+}

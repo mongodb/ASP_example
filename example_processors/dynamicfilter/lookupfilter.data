@@ -1,0 +1,73 @@
+#this processor looks up filtering rules for every message. 
+#This way the rule can be updated in the collection without having to change the processor $match stages
+#this processor also shows how to do event routing in $merge for run-time based collection targeting
+
+#in the database create a config collection and put in the filtering rule
+db.createCollection("config")
+db.config.insertOne({filter : 10, rule : 1001})
+db.createCollection('countData')
+db.countData.createIndex({"entity": 1}, {unique: true})
+
+#in Atlas Stream Processing build the processor
+#be sure to update the connection names
+  
+  s = {
+        $source:  {
+            connectionName: 'jsncluster0',
+            db: 'test',
+            coll: 'countData',
+            config : {
+              fullDocument: 'whenAvailable',
+                      }
+        }
+    }
+    rr = {$replaceRoot: {newRoot: '$fullDocument'}}
+
+    af = {$addFields: {rule : 1001}}
+    
+  
+   l = {
+        $lookup: {
+            from: {
+                connectionName: 'jsncluster0',
+                db: 'test',
+                coll: 'config'
+            },
+            localField: "rule",
+            foreignField: "rule",
+            as: 'rules',
+        }
+    }
+
+    m = {$match : {$expr : {$lte : ['$count', { $arrayElemAt: [ "$rules.filter", 0 ] }]}}}
+
+   inc = {$addFields: {
+    'count' : {$add :['$count' , 1]},
+    'filter_rule' : { $arrayElemAt: [ "$rules.filter", 0 ] }
+    }}
+
+
+    p = {$project : {
+        entity : 1,
+        count : 1,
+        filter_rule : 1
+    }}
+
+    merge =  {$merge: {
+        into: {
+            connectionName: "jsncluster0",
+            db: "test",
+            coll: { $cond: { if: {$expr : {$lte : ['$count', '$filter_rule']}}, then: "countData", else: { $concat: ["countData_",{$toString: '$count'}]} } }},
+            on: ["entity"],
+            whenMatched: "replace"
+
+    }}
+
+    sp.process([s,rr,af,l,m,inc,p,merge])
+
+    {dlq: {connectionName: "jsncluster0", db: "test", coll: "countdata_dlq"}}
+
+    sp.createStreamProcessor('lookupfilter', [s,rr,af,l,m,inc,p,merge],  {dlq: {connectionName: "jsncluster0", db: "test", coll: "countdata_dlq"}})
+      
+#insert a record to generate a change stream event
+    db.countData.insertOne({entity: 0, count : 0})
