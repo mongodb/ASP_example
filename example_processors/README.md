@@ -44,7 +44,7 @@ Method to duplicate events in the processor to send them to multiple output dest
 ### dynamicfilter
 Reads a MongoDB change stream $source collection, performs a $lookup to find filtering rules and applys the filter, increments the value of the document and writes it back to the same collection creating a loop. The merge stage output collection is dynamic and breaks the loop after a specific value is reached, writing it to another collection. 
 
-### lateData/lateDataExample.js
+### lateData / lateDataExample.js
 Example how late data handling works with allowedLateness. Helpful to understand how watermarks move forward and result in windows opening and closing. This example uses a timestamp from the document to control the watermark time of the event stream.
 
 ### fakeCron / scheduledProcessor.js
@@ -57,6 +57,9 @@ Processor shows how the idle timeout closes a window if no data is inbound when 
 Joining streams together and handling late events 
 https://medium.com/@josephxsxn/joins-with-late-data-handling-in-atlas-stream-processing-28219d365714 
 
+### lateData
+A simple example that can be ran to better understand how eventTime works with windows and lateData handling
+
 ### packet_processor
 Performs a tumblingWindow off of a kafka topic $source for packet combinations of src_ip, src_port, dst_ip, dst_port and performs some time math calculations. Also an example python script for collecting Packet data and writing it to a Kafka Topic 
 
@@ -66,8 +69,23 @@ Calculates and updates a collection to be a leaderboard. Racer data comes from a
 ### race_leaderboard_changestreams
 Like the race_leaderboard but designed for Change Stream Sources
 
+### reservationUpdater
+Example application that manages passenger lists based on reservation actions of passenger
+
 ### simple_solar
 Uses the built in solar data source to perform validation filtering of iot solar devices, and windowing of the average wattage created before updating devices in a Mongo Collection
+
+### streamingAtlasDeletes / sinkTTLDeletes.js
+Using soft deletes (setting document field to true) and partial TTL indexes on a collection to delete records
+
+### streamingAtlasDeletes / sourceTTLDeletes.js
+Using change streams and getting delete change events from a collection with a TTL index
+
+### streamingJoins / windowJoins.js
+Ways of joining together event documents in a window to access fields
+
+### streamingJoins / leftrightwindow.js
+Using a reducer to join 2 event documents completely together without accessing specific fields
 
 ### superdoc
 Two processors that work together to handle creation and updates, or deletes. The processors read the change stream $source of an entire database and output to a target collection a super document where each field of the document is the collection name it came from. Deletes work to detect that the source collection has deleted the document and removes it from the respective super document. 
