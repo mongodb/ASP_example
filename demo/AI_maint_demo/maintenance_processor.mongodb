@@ -1,0 +1,44 @@
+let processor = [
+  // MongoDB source
+  {
+    $source: {
+      connectionName: "cat_maint_demo",
+      db: "demo",
+      coll: "cat_maint_demo",
+    },
+  },
+  // replace the root with only fullDocument, we don't need the rest
+  { $replaceRoot: { newRoot: "$fullDocument" } },
+  // connect to LLM send data and set prompt
+  {
+    $https: {
+      connectionName: "AzureChatGPT",
+      method: "POST",
+      as: "apiResults",
+      config: {parseJsonStrings: true},
+      payload: [
+        {
+          $project: {
+            _id: 0,
+            model: "gpt-4o-mini",
+            response_format: { type: "json_object" },
+            messages: [
+              {
+                role: "system",
+                content: "You are an expert heavy equipment diagnostics AI. \
+                         Evaluate the issue report and provide a detailed analysis and a estimation of the time required to fix in JSON format"
+              },
+              { role: "user", content: "$issue_report" },
+            ],
+          },
+        },
+      ],
+    },
+  },
+  // results formatting
+  {
+    $project: {"apiResults.choices": 1}
+  },
+];
+
+sp.process(processor);
