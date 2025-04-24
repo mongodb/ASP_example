@@ -48,7 +48,7 @@ v1 = { $validate: {
                                             bsonType : "int",
                                             minimum: 0,
                                             maximum: 500,
-                                            description: "'obs.watts' is required and cannot be less then 0 or more then 250"
+                                            description: "'obs.watts' is required and cannot be less then 0 or more then 500"
                                         },
                                         temp : {
                                              bsonType: "int",
@@ -96,8 +96,8 @@ sp.process([s,v1])
                                         watts : {
                                             bsonType : "int",
                                             minimum: 0,
-                                            maximum: 250,
-                                            description: "'obs.watts' is required and cannot be less then 0 or more then 250"
+                                            maximum: 400,
+                                            description: "'obs.watts' is required and cannot be less then 0 or more then 400"
                                         },
                                         temp : {
                                              bsonType: "int",
