@@ -16,7 +16,7 @@ Three main examples are indexed below: code_snipplets which are example MQL solu
 
 
 
-# How To Enable Change Stream Sources
+# How To Enable PrePost Images on Change Stream Sources
 Enable col for fullDocuments in given database, the below code will enable ALL collections in the database it is ran in.
 
 ```
@@ -28,6 +28,24 @@ for (const el of cols){
         changeStreamPreAndPostImages: { enabled: true }
     } )
 }
+```
+
+# Check if PrePost Images on Change Streams are enabled on a collection
+```
+db.getCollectionInfos({name : "data"})
+
+[
+  {
+    name: 'data',
+    type: 'collection',
+    options: { changeStreamPreAndPostImages: { enabled: true } },
+    info: {
+      readOnly: false,
+      uuid: UUID('ff7e3cd5-aa05-4576-aaf4-67bb7eac57d0')
+    },
+    idIndex: { v: 2, key: { _id: 1 }, name: '_id_' }
+  }
+]
 ```
 
 ## Count messages on oplog
