@@ -10,8 +10,8 @@ We encourage collaboration, anyone can open a pull request on this repository. B
 
 ## Structure
 The structure for this repository is:
-* [Code snippets](https://github.com/josephxsxn/atlas_stream_processors/tree/master/code_snipplets) are example MQL solutions to specific problems.
-* [Example procesors](https://github.com/josephxsxn/atlas_stream_processors/tree/master/example_processors) are end to end Atlas Stream Processing Examples.
-* [Terraform](https://github.com/josephxsxn/atlas_stream_processors/tree/master/terraform) examples, explain Terraform usage with Atlas Stream Processing.
-* [DB examples]() are examples for the MongoDB database in relation to Atlas Stream Processing.
-* [Demo]() is various self-contained demos.
+* [Code snippets](/code_snipplets) are example MQL solutions to specific problems.
+* [Example procesors](/example_processors) are end to end Atlas Stream Processing Examples.
+* [Terraform](/terraform) examples, explain Terraform usage with Atlas Stream Processing.
+* [DB examples](/db) are examples for the MongoDB database in relation to Atlas Stream Processing.
+* [Demo](/demo) is various self-contained demos.
