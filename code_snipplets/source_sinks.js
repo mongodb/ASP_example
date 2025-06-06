@@ -82,6 +82,16 @@ merge = {
 
     }}
 
+--Deletes in Merge
+ m = {$merge: {
+            into: {
+                connectionName: "jsncluster0", db: "lce", coll: "deltest"
+            },
+            whenMatched: {$cond: {if: {$eq: ["$isActive",0]}, then: "delete", else: "merge"}}, 
+            whenNotMatched:  "insert"
+            },
+        }
+
 --Emit to a Kafka Topic
 e =     { $emit: { 
             connectionName: 'aaeh', 
