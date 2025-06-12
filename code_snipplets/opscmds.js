@@ -16,6 +16,11 @@ sp.name.start()
 
 
 #mod processor to restart changestream at specific time
+#method 1 
+sp.stuff.stop()
+sp.stuff.start({options: {startAtOperationTime: new Date("2025-06-12T02:00:00.000Z")}})
+
+#method 2
 sp.stuff.stop()
 pipeline = sp.stuff.stats().pipeline
 pipeline[0]["$source"]["config"]["startAtOperationTime"] = new Date("2025-06-12T01:00:00.000Z")
