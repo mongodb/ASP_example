@@ -216,3 +216,14 @@ e = {$emit : {
 --kafka multi-topic $source
 s = {$source : {connectionName : "kafkaprod",
     topic : ["topic_1","topic_2"]}}
+
+--null delets (kafka null value test, and merge delete)
+ m = {$merge: {
+            into: {
+                connectionName: "jsncluster0", db: "lce", coll: "del"
+            },
+            whenMatched: {$cond: {if: {$eq: ["$$ROOT", {}]}, then: "delete", else: "merge"}}, 
+            whenNotMatched:  "insert"
+            },
+            on : {$meta: "stream.source.key"}
+        }   
