@@ -224,6 +224,6 @@ m = {$merge: {
             },
             whenMatched: {$cond: {if: {$eq: ["$$ROOT", {}]}, then: "delete", else: "merge"}}, 
             whenNotMatched:  "insert",
-            on : {$meta: "stream.source.key"}
+            on : "_id"
         }}
 
