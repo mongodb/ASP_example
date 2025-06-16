@@ -12,13 +12,13 @@ terraform {
 }
 
 provider "confluent" {
-  cloud_api_key    = "..."    # USING 
-  cloud_api_secret = "..." # optionally use CONFLUENT_CLOUD_API_SECRET env var
+  cloud_api_key    = "...."    # USING 
+  cloud_api_secret = "...." # optionally use CONFLUENT_CLOUD_API_SECRET env var
 }
 
 provider "mongodbatlas" {
-  public_key = "..."
-  private_key  = "..."
+  public_key = "...."
+  private_key  = "...."
 }
 
 resource "confluent_environment" "staging" {
@@ -90,7 +90,7 @@ output "plsubdns" {
 
 
 resource "mongodbatlas_stream_privatelink_endpoint" "test" {
-  project_id          = "..." # Atlas Project ID
+  project_id          = "...." # Atlas Project ID
   dns_domain          = confluent_network.private_link.dns_domain
   provider_name       = "AWS"
   region              = "us-east-1"
@@ -109,7 +109,7 @@ output "interface_endpoint_id" {
 }
 
 resource "mongodbatlas_stream_instance" "test" {
-    project_id = "..." # Atlas Project ID
+    project_id = "...." # Atlas Project ID
     instance_name = "JSNTFTESTING"
     data_process_region = {
         region = "VIRGINIA_USA"
@@ -121,7 +121,7 @@ resource "mongodbatlas_stream_instance" "test" {
 }
 
 resource "mongodbatlas_stream_connection" "jsncluster0" {
-    project_id = "..." # Atlas Project ID
+    project_id = "...." # Atlas Project ID
     instance_name = "JSNTFTESTING"
     connection_name = "jsncluster0conn"
     type = "Cluster"
@@ -133,7 +133,7 @@ resource "mongodbatlas_stream_connection" "jsncluster0" {
 }
 
 resource "mongodbatlas_stream_connection" "kafkacluster" {
-    project_id = ".." # Atlas Project ID
+    project_id = "...." # Atlas Project ID
     instance_name = "JSNTFTESTING"
     connection_name = "kafkapl"
     type = "Kafka"
@@ -164,7 +164,7 @@ resource "mongodbatlas_stream_connection" "kafkacluster" {
 */
 
 data "local_file" "processor" {
-  filename = "/../.." 
+  filename = "/Users/joe.niemiec/Documents/POCs/indeed/csstreamprocessor.data" 
 }
 
 resource "mongodbatlas_stream_processor" "stream-processor-change-stream" {
