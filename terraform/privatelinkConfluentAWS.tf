@@ -12,13 +12,13 @@ terraform {
 }
 
 provider "confluent" {
-  cloud_api_key    = "....."    # USING 
-  cloud_api_secret = "......" # optionally use CONFLUENT_CLOUD_API_SECRET env var
+  cloud_api_key    = "..."    # USING 
+  cloud_api_secret = "..." # optionally use CONFLUENT_CLOUD_API_SECRET env var
 }
 
 provider "mongodbatlas" {
-  public_key = "....."
-  private_key  = "....."
+  public_key = "..."
+  private_key  = "..."
 }
 
 resource "confluent_environment" "staging" {
@@ -39,7 +39,7 @@ resource "confluent_network" "private_link" {
 }
 
 data "mongodbatlas_stream_account_details" "account_details" {
-  project_id     = "....."
+  project_id     = "...."
   cloud_provider = "aws"
   region_name    = "US_EAST_1"
 }
@@ -90,7 +90,7 @@ output "plsubdns" {
 
 
 resource "mongodbatlas_stream_privatelink_endpoint" "test" {
-  project_id          = "....."
+  project_id          = "...."
   dns_domain          = confluent_network.private_link.dns_domain
   provider_name       = "AWS"
   region              = "us-east-1"
@@ -100,7 +100,7 @@ resource "mongodbatlas_stream_privatelink_endpoint" "test" {
 }
 
 data "mongodbatlas_stream_privatelink_endpoint" "singular_datasource" {
-  project_id = "....."
+  project_id = "...."
   id         = mongodbatlas_stream_privatelink_endpoint.test.id
 }
 
