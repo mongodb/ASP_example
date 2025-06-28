@@ -1,0 +1,35 @@
+{
+  "name": "mongodb-atlas-solar-stream-processing-demo",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "This demo will give you an overview of some of the core features in MongoDB's Atlas Stream Processing.  You can run it in your own environment as a quickstart guide.",
+  "main": "setup_env.js",
+  "scripts": {
+    "test": "\"test\": \"echo \\\"No tests specified\\\"\""
+  },
+  "keywords": [
+    "MongoDB",
+    "Atlas",
+    "Stream",
+    "Processing",
+    "Streaming",
+    "CDC",
+    "Change",
+    "Data",
+    "Capture"
+  ],
+  "author": "Ryan Waldorf",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanwithawhy/asp_demo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ryanwithawhy/asp_demo/issues"
+  },
+  "homepage": "https://github.com/ryanwithawhy/asp_demo#readme",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "mongodb": "^6.17.0"
+  }
+}
