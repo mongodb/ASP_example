@@ -227,3 +227,16 @@ m = {$merge: {
             on : ["_id"]
         }}
 
+--emit null values to Kafka for compacting topic keyed deletes
+-- { 'opType': 'delete', data: 1, case: '1' }
+{
+        '$emit': {
+            connectionName: 'kafka-source-03',
+            topic: 'tombstone_test',
+            config: {
+                tombstoneWhen: { '$eq': ['delete', '$opType'] },
+                key: '$case',
+                keyFormat: 'string'
+            }
+        }
+    }
