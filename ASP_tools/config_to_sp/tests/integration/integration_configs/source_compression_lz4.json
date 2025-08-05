@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.producer.override.compression.type.lz4",
+    "topic.prefix": "test",
+    "producer.override.compression.type": "lz4"
+}

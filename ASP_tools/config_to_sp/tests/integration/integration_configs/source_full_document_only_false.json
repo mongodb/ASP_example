@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.publish.full.document.only.false",
+    "publish.full.document.only": "FALSE",
+    "shouldFail": true
+}

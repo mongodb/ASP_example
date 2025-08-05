@@ -1,0 +1,15 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.combined.multiple.params",
+    "topic.prefix": "myapp",
+    "topic.separator": "_",
+    "topic.suffix": "events",
+    "change.stream.full.document": "whenAvailable",
+    "change.stream.full.document.before.change": "required",
+    "publish.full.document.only": "TRUE",
+    "pipeline": "[{\"$match\": {\"operationType\": \"insert\"}}]",
+    "producer.override.compression.type": "gzip",
+    "output.json.format": "ExtendedJson",
+    "startup.mode": "copy_existing",
+    "errors.tolerance": "all"
+}

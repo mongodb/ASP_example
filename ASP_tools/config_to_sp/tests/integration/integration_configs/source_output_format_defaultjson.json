@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.output.json.format.defaultjson",
+    "topic.prefix": "test",
+    "output.json.format": "DefaultJson"
+}

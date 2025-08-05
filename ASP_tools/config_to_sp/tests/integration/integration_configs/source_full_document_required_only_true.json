@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.publish.full.document.required.only.true",
+    "change.stream.full.document": "required",
+    "publish.full.document.only": "TRUE"
+}

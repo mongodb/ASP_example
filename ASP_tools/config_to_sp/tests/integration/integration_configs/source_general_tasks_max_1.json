@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.general.tasks.max.1",
+    "topic.prefix": "test",
+    "tasks.max": "1"
+}

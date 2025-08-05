@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSink",
+    "name": "sink.doc.id.strategy.uuidstrategy",
+    "doc.id.strategy": "UuidStrategy",
+    "shouldFail": true
+}

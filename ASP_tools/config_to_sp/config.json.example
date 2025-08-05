@@ -1,0 +1,11 @@
+{
+    "confluent-cluster-id": "lkc-12345",
+    "confluent-rest-endpoint": "https://pkc-abc123.us-west-2.aws.confluent.cloud:443",
+    "mongodb-stream-processor-instance-url": "mongodb://cluster0-shard-00-00.mongodb.net:27017",
+    "kafka-connection-name": "kafka-connection",
+    "mongodb-connection-name": "mongodb-connection", 
+    "mongodb-cluster-name": "Cluster0",
+    "mongodb-group-id": "507f1f77bcf86cd799439011",
+    "mongodb-tenant-name": "MyTenant",
+    "mongodb-connection-role": "readAndWriteAnyDatabase"
+}

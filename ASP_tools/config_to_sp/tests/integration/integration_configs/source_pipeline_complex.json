@@ -1,0 +1,5 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.pipeline.complex",
+    "pipeline": "[{\"$match\": {\"operationType\": {\"$in\": [\"insert\", \"update\"]}}}, {\"$project\": {\"_id\": 1, \"fullDocument\": 1, \"operationType\": 1}}]"
+}

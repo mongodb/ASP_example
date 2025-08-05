@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.general.server.api.deprecation.errors.false",
+    "topic.prefix": "test",
+    "server.api.deprecation.errors": "FALSE"
+}

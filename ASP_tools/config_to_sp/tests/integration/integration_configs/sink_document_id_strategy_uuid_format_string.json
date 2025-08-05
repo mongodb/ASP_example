@@ -1,0 +1,5 @@
+{
+    "connector.class": "MongoDbAtlasSink",
+    "name": "sink.document.id.strategy.uuid.format.string",
+    "document.id.strategy.uuid.format": "string"
+}

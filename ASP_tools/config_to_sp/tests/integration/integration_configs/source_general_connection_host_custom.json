@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.general.connection.host.custom",
+    "topic.prefix": "test",
+    "connection.host": "custom-cluster.mongodb.net"
+}

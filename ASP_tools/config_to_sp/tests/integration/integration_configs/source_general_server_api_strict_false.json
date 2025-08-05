@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.general.server.api.strict.false",
+    "topic.prefix": "test",
+    "server.api.strict": "FALSE"
+}

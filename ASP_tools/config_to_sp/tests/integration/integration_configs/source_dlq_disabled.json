@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.errors.tolerance.ignore",
+    "topic.prefix": "test",
+    "errors.tolerance": "ignore"
+}

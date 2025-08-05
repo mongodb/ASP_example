@@ -1,0 +1,5 @@
+{
+    "connector.class": "MongoDbAtlasSink",
+    "name": "sink.cdc.handler.none",
+    "cdc.handler": "None"
+}

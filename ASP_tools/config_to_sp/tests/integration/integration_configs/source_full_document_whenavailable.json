@@ -1,0 +1,5 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.change.stream.full.document.whenavailable",
+    "change.stream.full.document": "whenAvailable"
+}

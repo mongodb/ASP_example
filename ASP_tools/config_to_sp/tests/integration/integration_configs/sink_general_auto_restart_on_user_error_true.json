@@ -1,0 +1,5 @@
+{
+    "connector.class": "MongoDbAtlasSink",
+    "name": "sink.general.auto.restart.on.user.error.true",
+    "auto.restart.on.user.error": "TRUE"
+}

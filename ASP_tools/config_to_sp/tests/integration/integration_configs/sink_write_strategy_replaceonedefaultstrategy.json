@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSink",
+    "name": "sink.write.strategy.replaceonedefaultstrategy",
+    "write.strategy": "ReplaceOneDefaultStrategy",
+    "shouldFail": true
+}

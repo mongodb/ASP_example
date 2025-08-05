@@ -1,0 +1,5 @@
+{
+    "connector.class": "MongoDbAtlasSink",
+    "name": "sink.doc.id.strategy.bsonoidstrategy",
+    "doc.id.strategy": "BsonOidStrategy"
+}

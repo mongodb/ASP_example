@@ -1,0 +1,6 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "source.initial.sync.enable.true",
+    "topic.prefix": "test",
+    "startup.mode": "copy_existing"
+}
