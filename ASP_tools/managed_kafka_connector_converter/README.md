@@ -1,4 +1,4 @@
-# MongoDB Atlas Stream Processing - Managed Kafka Connector Convert Tool
+# MongoDB Atlas Stream Processing - Managed Kafka Connector Converter Tool
 
 This tool enable you create Atlas Stream Processing (ASP) stream processors using Confluent managed connector configuration files.  It's designed to be used by MongoDB field teams to easily help their customers test ASP.  Customers are welcome to use it without the support of MongoDB field teams.
 
