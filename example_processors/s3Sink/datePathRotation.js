@@ -34,4 +34,34 @@ curl  --request POST --location "https://cloud.mongodb.com/api/atlas/v2/groups/G
 		"roleArn": "ARNFROMIAMFROMTRUSTROLE",
 		"testBucket": "jsnbucket0"
 	}}'
-    
+
+
+IAM Policy
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"s3:ListBucket",
+				"s3:GetObject",
+				"s3:GetObjectVersion",
+				"s3:GetBucketLocation",
+				"s3:ListAllMyBuckets"
+			],
+			"Resource": [
+				"arn:aws:s3:::*"
+			]
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"s3:PutObject"
+			],
+			"Resource": [
+				"arn:aws:s3:::jsncluster0datafed",
+				"arn:aws:s3:::jsncluster0datafed/*"
+			]
+		}
+	]
+}
