@@ -47,7 +47,8 @@ IAM Policy
 				"s3:GetObject",
 				"s3:GetObjectVersion",
 				"s3:GetBucketLocation",
-				"s3:ListAllMyBuckets"
+				"s3:ListAllMyBuckets",
+				"s3:AbortMultipartUpload"
 			],
 			"Resource": [
 				"arn:aws:s3:::*"
