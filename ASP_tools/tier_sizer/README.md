@@ -54,7 +54,16 @@ The script prints a header followed by a CSV-style list, one for each processor.
 
 **Example Output:**
 
-Stream Processor Memory & Tier Recommendations (Targeting <= 70% usage):Processor, Recommended Tier, Memory Usage, % Used of Tiersolardemo, SP2, 205,520,896 bytes, 38.3%iot_data, No stats available, N/A, N/Adata_pipeline, SP5, 750,123,456 bytes, 69.9%heavy_processor, No suitable tier (Larger than SP50), 40,123,456,789 bytes, N/A
+```
+Stream Processor Memory & Tier Recommendations (Targeting <= 70% usage):
+Processor, Recommended Tier, Memory Usage, % Used of Tiers
+solardemo, SP2, 205,520,896 bytes, 38.3%
+iot_data, No stats available, N/A, N/A
+data_pipeline, SP5, 750,123,456 bytes, 69.9%
+heavy_processor, No suitable tier (Larger than SP50), 40,123,456,789 bytes, N/A
+```
+
+
 ## Error & State Handling
 
 The script is designed to run without crashing, even when processors are in different states:
