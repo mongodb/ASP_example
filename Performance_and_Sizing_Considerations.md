@@ -48,7 +48,7 @@ For clarity, p50 (50th percentile) means that 50% of requests are faster than th
         outputMessageCount: Long('13319'),
         outputMessageSize: 0
       } 
-      ```
+```
 
 ## Parallelism Settings in Stages
 To enhance performance, certain stages in the data processing pipeline, such as `$merge` or `$lookup` (and more,)  support a parallelism value that enables concurrent operations. The maximum cumulative parallelism allowed across all stages is dependent on the specific tier being used, and details can be found in the documentation here. Increasing the parallelism value for supporting stages can lead to improved performance.
