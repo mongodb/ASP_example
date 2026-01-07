@@ -1,4 +1,6 @@
- s = {$source : {documents : [{f1: 1, f2: 2}, {f1: 3, f2: 4}]}}
+//Creates 2 diffrent projections from a single event and routes them to diff topics
+
+s = {$source : {documents : [{f1: 1, f2: 2}, {f1: 3, f2: 4}]}}
  set = {$set : {topic : ["events_format1", "events_format2"]}}
  uw = {$unwind : "$topic"}
  setmeta = {$setStreamMeta : {"stream.topicFormat" : "$topic"}}
