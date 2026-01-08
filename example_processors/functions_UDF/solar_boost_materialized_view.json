@@ -1,0 +1,34 @@
+{
+  "name": "solar_boost_materialized_view",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "sample_stream_solar",
+        "timeField": { "$dateFromString": { "dateString": "$timestamp" }}
+      }
+    },
+    {
+      "$addFields": {
+        "boosted_watts": {
+          "$function": {
+            "body": "function(watts) { return watts * 1.2; }",
+            "args": ["$obs.watts"],
+            "lang": "js"
+          }
+        }
+      }
+    },
+    {
+      "$merge": {
+        "into": {
+          "connectionName": "mycluster",
+          "db": "analytics",
+          "coll": "MV_solar_boost_materialized_view"
+        },
+        "on": "device_id",
+        "whenMatched": "replace",
+        "whenNotMatched": "insert"
+      }
+    }
+  ]
+}
