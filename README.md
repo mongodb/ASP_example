@@ -57,6 +57,7 @@ We encourage collaboration, anyone can open a pull request on this repository. B
 
 ## Structure
 The structure for this repository is:
+* [Quickstarts](/quickstarts) - Short, canonical examples to get started with Atlas Stream Processing.
 * [Code snippets](/code_snipplets) are example MQL solutions to specific problems.
 * [Example procesors](/example_processors) are end to end Atlas Stream Processing Examples.
 * [Terraform](/terraform) examples, explain Terraform usage with Atlas Stream Processing.
