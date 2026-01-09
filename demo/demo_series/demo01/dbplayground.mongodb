@@ -1,0 +1,2 @@
+use demo;
+db.demo01.findOne();

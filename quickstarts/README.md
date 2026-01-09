@@ -154,7 +154,7 @@ These sources are **automatically available** without any connection setup:
 
 ### What You Need to Set Up
 
-1. **Stream Processing Instance**: Created in Atlas UI under Stream Processing
+1. **Stream Processing Workspace**: Created in Atlas UI under Stream Processing
 
 2. **MongoDB Shell (mongosh)**: Install the latest version
    ```bash
@@ -164,7 +164,7 @@ These sources are **automatically available** without any connection setup:
    # Or download from mongodb.com/try/download/shell
    ```
 
-3. **Authentication**: Connect to your Atlas Stream Processing instance
+3. **Authentication**: Connect to your Atlas stream processing workspace
    ```bash
    mongosh "mongodb://your-atlas-stream-processing-endpoint"
    ```

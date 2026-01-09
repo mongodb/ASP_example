@@ -10,7 +10,7 @@ https://www.mongodb.com/docs/atlas/configure-api-access/#create-an-api-key-in-an
 Example of creating, changing, and deleting processors in Terraform (without using .modify)
 
 ### basicsample.data
-Deploys an SPI (stream processing instance) and create a connection to an Atlas Database
+Deploys a stream processing workspace and create a connection to an Atlas Database
 
 ### privatelinkConfluentAWS.tf
-Script for creating a dedicated Confluent kafka cluster, private link networking, a Stream Processing Instance, and stream processor
+Script for creating a dedicated Confluent kafka cluster, private link networking, a stream processing workspace, and stream processor

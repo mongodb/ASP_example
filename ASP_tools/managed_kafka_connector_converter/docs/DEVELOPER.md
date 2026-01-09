@@ -472,7 +472,7 @@ The system includes comprehensive error handling:
 
 #### MongoDB Shell (mongosh)
 - `sp.createStreamProcessor()` - Create stream processors
-- Connects to Atlas Stream Processing instances
+- Connects to Atlas stream processing workspaces
 - Executes JavaScript commands for pipeline creation
 
 #### Confluent REST API

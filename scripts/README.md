@@ -2,12 +2,12 @@
 These scripts are designed to assist in starting and stopping all stream processors in a target SPI. 
 
 ## .env
-The .env file contains the configuration to use in each script. This includes the Atlas APIKey (Public and Private Key,) The Project ID where the Stream Processing Instance is, and the name of the Stream Processing Instance
+The .env file contains the configuration to use in each script. This includes the Atlas APIKey (Public and Private Key,) The Project ID where the stream processing workspace is, and the name of the stream processing workspace
 
 1. An API Key for the given Atlas Project is required. To create the API Key follow the Atlas Documentation here: 
 https://www.mongodb.com/docs/atlas/configure-api-access/#add-project-access-from-a-project 
 2. To find the Project ID navigate the to Project Overview in the Atlas Project UI to copy it.
-3. Use the name of the Stream Processing Instance
+3. Use the name of the stream processing workspace
 
 ```
 ATLAS_USERNAME=apublickey
@@ -20,7 +20,7 @@ ATLAS_STREAM_INSTANCE=MYSPI
 ```
 usage: startAll.py [-h] [--startAtOperationTime STARTATOPERATIONTIME]
 
-Start all MongoDB Atlas Stream Processors in a Stream Processing Instance
+Start all MongoDB Atlas Stream Processors in a stream processing workspace
 
 options:
   -h, --help            show this help message and exit

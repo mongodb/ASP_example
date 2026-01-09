@@ -1,0 +1,7 @@
+
+s = { $source: {connectionName: "sample_stream_solar"}}
+m = { $match: { "obs.watts": { $gt: 300}}}
+d = { $merge: { into: { connectionnName: "kgShardedCluster01": db: "demo", coll: demo01 }}}
+p = [s, m, d]
+
+sp.process(p) 

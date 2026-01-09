@@ -40,7 +40,7 @@ To use this project you create a main configuration file with a few MongoDB Atla
 
 ### Quick Start
 
-0. **Create an Atlas Stream Processing Instance** if you don't already have one.  You'll need the stream processing instance url for the next step.
+0. **Create an Atlas stream processing workspace** if you don't already have one.  You'll need the stream processing workspace url for the next step.
 1. **Configure your main settings** in a main configuration file (see [Main Configuration](#main-configuration) below)
 2. **Create configuration files for each processor** you want to create.  You can have one processor for one or more collections or topics (see [Connector Configurations](#connector-configurations) below)
 3. **Run the create processor command**:
@@ -64,7 +64,7 @@ The main configuration file contains settings for your MongoDB Atlas and Conflue
 |-------|-------------|---------|
 | `confluent-cluster-id` | Your Confluent Cloud Kafka cluster ID | `"lkc-12345"` |
 | `confluent-rest-endpoint` | Confluent Cloud REST API endpoint | `"https://pkc-abc123.us-west-2.aws.confluent.cloud:443"` |
-| `mongodb-stream-processor-instance-url` | MongoDB Atlas Stream Processing instance URL | `"mongodb://cluster0-shard-00-00.mongodb.net:27017"` |
+| `mongodb-stream-processor-instance-url` | MongoDB Atlas stream processing workspace URL | `"mongodb://cluster0-shard-00-00.mongodb.net:27017"` |
 | `kafka-connection-name` | Name for the shared Kafka connection | `"kafka-connection"` |
 | `mongodb-connection-name` | Name for the shared MongoDB connection | `"mongodb-connection"` |
 | `mongodb-cluster-name` | Name of your MongoDB Atlas cluster | `"Cluster0"` |

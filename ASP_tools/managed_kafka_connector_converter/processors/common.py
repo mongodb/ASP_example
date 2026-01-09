@@ -108,7 +108,7 @@ def check_connection_exists(
     tenant_name: str,
     connection_name: str
 ) -> bool:
-    """Check if a connection already exists in the Atlas Stream Processing instance."""
+    """Check if a connection already exists in the Atlas stream processing workspace."""
     try:
         # List connections using Atlas CLI
         cmd = [
@@ -582,7 +582,7 @@ def list_stream_processors(
     stream_processor_url: str
 ) -> List[str]:
     """
-    List all stream processors in a MongoDB Atlas Stream Processing instance.
+    List all stream processors in a MongoDB Atlas stream processing workspace.
     
     Args:
         connection_user: MongoDB user for authentication
@@ -647,7 +647,7 @@ def destroy_stream_processor(
     processor_name: str
 ) -> bool:
     """
-    Destroy/delete a stream processor in a MongoDB Atlas Stream Processing instance.
+    Destroy/delete a stream processor in a MongoDB Atlas stream processing workspace.
     
     Args:
         connection_user: MongoDB user for authentication

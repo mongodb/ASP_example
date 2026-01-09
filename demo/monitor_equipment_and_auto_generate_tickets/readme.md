@@ -51,7 +51,7 @@ This processor reads the change streams from the maintenance windows collection,
 In order to set this up, you'll need access to an Atlas account that includes:
 
 1. An Atlas Cluster you can write to
-2. A stream processing instance you can connect to
+2. A stream processing workspace you can connect to
 
 # Setup
 
@@ -59,7 +59,7 @@ In order to set this up, you'll need access to an Atlas account that includes:
 
 ### Create Connections
 
-In your Atlas Stream Processing instance, you need to create the following three collections:
+In your Atlas stream processing workspace, you need to create the following three collections:
 
 1. **A sample stream connection called "sample_stream_solar"**  
    This connection mimics a Kafka topic connection streaming solar generator wattage and temperature IoT data.
@@ -80,7 +80,7 @@ npm init -y
 npm install dotenv mongodb
 ```
 
-You will then need to create a .env file with information about your MongoDB cluster and stream processing instance.  The file .env_example has all values you need to provide.
+You will then need to create a .env file with information about your MongoDB cluster and stream processing workspace.  The file .env_example has all values you need to provide.
 
 # How to Use This Repository
 
