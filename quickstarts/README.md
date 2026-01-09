@@ -150,13 +150,18 @@ sp.createStreamProcessor(def.name, def.pipeline)
 
 These sources are **automatically available** without any connection setup:
 - **`documents`**: Inline array of documents (used in `00_hello_world.json`)
-- **`sample_stream_solar`**: MongoDB-provided sample streaming data
+- **`sample_stream_solar`**: MongoDB-provided sample streaming data (read-only source)
 
 ### What You Need to Set Up
 
 1. **Stream Processing Workspace**: Created in Atlas UI under Stream Processing
 
-2. **MongoDB Shell (mongosh)**: Install the latest version
+2. **Atlas Cluster Connection** (for writing data):
+   - Register your Atlas cluster as a connection named `sample_streaming` in the connection registry
+   - This is used to write results to collections (examples 01, 03, 04)
+   - See [Atlas Stream Processing Connections Docs](https://www.mongodb.com/docs/atlas/atlas-sp/connections/)
+
+3. **MongoDB Shell (mongosh)**: Install the latest version
    ```bash
    # macOS
    brew install mongosh
@@ -176,19 +181,22 @@ These sources are **automatically available** without any connection setup:
 
 ### Connection Registry Notes
 
-- The `sample_stream_solar` connection is used for both reading streaming data and writing to collections
+- **`sample_stream_solar`** is a read-only streaming source (cannot be used for $merge destinations)
+- **`sample_streaming`** connection is your Atlas cluster used for writing collections
 - **Example 00** (`hello_world.json`) works immediately - no external connections needed
-- **Example 01** (`changestream_basic.json`) works immediately and writes to `quickstart.solar_rollup` collection
+- **Example 01** (`changestream_basic.json`) requires the `sample_streaming` connection and writes to `sample_streaming.solar_rollup` collection
 - **Example 02** (`changestream_to_kafka.json`) uses `sample_stream_solar` as source, only needs Kafka sink connection
-- **Example 04** (`mongo_to_mongo.json`) reads from the collection created by Example 01 and archives it
+- **Example 03** (`kafka_to_mongo.json`) requires the `sample_streaming` connection - writes to `sample_streaming.flights_1m`
+- **Example 04** (`mongo_to_mongo.json`) requires the `sample_streaming` connection - reads from `solar_rollup` and archives to `solar_archive`
 - Examples with Kafka sinks or sources (`02`, `03`, `05`) require you to register your Kafka brokers in the connection registry
 
 ### Recommended Learning Path
 
 1. Start with `00_hello_world.json` (ephemeral, no setup)
-2. Run `01_changestream_basic.json` as a persistent processor (creates data for next step)
-3. Once #2 is running, try `04_mongo_to_mongo.json` to read and archive the rollup data
-4. Set up Kafka connections to try the Kafka examples (`02`, `03`, `05`)
+2. Set up the `sample_streaming` Atlas cluster connection in your connection registry
+3. Run `01_changestream_basic.json` as a persistent processor (creates data for next step)
+4. Once #3 is running, try `04_mongo_to_mongo.json` to read and archive the rollup data
+5. Set up Kafka connections to try the Kafka examples (`02`, `03`, `05`)
 
 ---
 
@@ -209,9 +217,9 @@ const solar = JSON.parse(fs.readFileSync('01_changestream_basic.json', 'utf8'))
 sp.createStreamProcessor(solar.name, solar.pipeline)
 sp.changestream_basic.start()
 
-// Every 10 seconds, device message counts are written to quickstart.solar_rollup
+// Every 10 seconds, device message counts are written to sample_streaming.solar_rollup
 // Check the collection:
-// use quickstart
+// use sample_streaming
 // db.solar_rollup.find()
 ```
 
@@ -222,7 +230,7 @@ const archive = JSON.parse(fs.readFileSync('04_mongo_to_mongo.json', 'utf8'))
 sp.createStreamProcessor(archive.name, archive.pipeline)
 sp.mongo_to_mongo.start()
 
-// Changes to quickstart.solar_rollup are now archived to quickstart.solar_archive
+// Changes to sample_streaming.solar_rollup are now archived to sample_streaming.solar_archive
 ```
 
 ### Example 4: Kafka Tail (Monitor Topic)

@@ -23,8 +23,8 @@
     {
       "$merge": {
         "into": {
-          "connectionName": "aircraft_analytics",
-          "db": "analytics",
+          "connectionName": "sample_streaming",
+          "db": "sample_streaming",
           "coll": "flights_1m"
         },
         "on": "_id",

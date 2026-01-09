@@ -22,8 +22,8 @@
     {
       "$merge": {
         "into": {
-          "connectionName": "sample_stream_solar",
-          "db": "quickstart",
+          "connectionName": "sample_streaming",
+          "db": "sample_streaming",
           "coll": "solar_rollup"
         },
         "on": "_id",
