@@ -29,14 +29,15 @@ This format:
 
 | File                              | Pattern                                        | Description                         |
 | --------------------------------- | ---------------------------------------------- | ----------------------------------- |
-| `00_hello_world.json`             | Docs array → `$match`                          | Zero infra; sanity check.           |
-| `01_changestream_basic.json`      | `sample_stream_solar` → 10s windowed `$group`  | First change‑stream demo.           |
-| `02_changestream_to_kafka.json`   | Change stream → `$emit` → Kafka                | Atlas → Kafka fan‑out.              |
-| `03_kafka_to_mongo.json`          | Kafka → 60s roll‑up → `$merge` into Atlas      | Ingest + aggregate.                 |
-| `04_mongo_to_mongo.json`          | Atlas coll → `$addFields` → `$merge`           | Same‑cluster ETL.                   |
-| `05_kafka_tail.json` *            | Kafka → console (no sink)                      | `tail -f` for Kafka.                |
+| `00_hello_world.json` **          | Docs array → `$match`                          | Zero infra; ephemeral only.         |
+| `01_changestream_basic.json`      | `sample_stream_solar` → rollup → `$merge`      | Groups and writes to collection.    |
+| `02_changestream_to_kafka.json`   | `sample_stream_solar` → `$emit` → Kafka        | Stream to Kafka topic. *            |
+| `03_kafka_to_mongo.json`          | Kafka → 60s roll‑up → `$merge` into Atlas      | Ingest + aggregate. *               |
+| `04_mongo_to_mongo.json`          | Reads `solar_rollup` → archive                 | Uses output from example 01.        |
+| `05_kafka_tail.json` **           | Kafka → console (no sink)                      | `tail -f` for Kafka. *              |
 
-> **\*** `05_kafka_tail.json` has no sink stage, so it only works with `sp.process()` (ephemeral mode). It cannot be used with `sp.createStreamProcessor()`.
+> **\*** Requires Kafka connection setup in Atlas Stream Processing connection registry  
+> **\*\*** No sink stage - only works with `sp.process()` (ephemeral mode)
 
 ---
 
@@ -145,14 +146,17 @@ sp.createStreamProcessor(def.name, def.pipeline)
 
 ## Prerequisites
 
-Before running these examples, ensure you have:
+### What's Already Available
+
+These sources are **automatically available** without any connection setup:
+- **`documents`**: Inline array of documents (used in `00_hello_world.json`)
+- **`sample_stream_solar`**: MongoDB-provided sample streaming data
+
+### What You Need to Set Up
 
 1. **Stream Processing Instance**: Created in Atlas UI under Stream Processing
-2. **Connections**: Register your data sources (clusters, Kafka brokers)
-   - Sample data: `sample_stream_solar` is available by default
-   - Custom connections: See Atlas UI → Stream Processing → Connections
 
-3. **MongoDB Shell**: Install the latest version
+2. **MongoDB Shell (mongosh)**: Install the latest version
    ```bash
    # macOS
    brew install mongosh
@@ -160,42 +164,78 @@ Before running these examples, ensure you have:
    # Or download from mongodb.com/try/download/shell
    ```
 
-4. **Authentication**: Connect to your Atlas Stream Processing instance
+3. **Authentication**: Connect to your Atlas Stream Processing instance
    ```bash
    mongosh "mongodb://your-atlas-stream-processing-endpoint"
    ```
+
+4. **Kafka Connections** (Required for examples 02, 03, 05):
+   - Register Kafka brokers in Atlas UI → Stream Processing → Connections
+   - Create a connection named to match the `connectionName` in the JSON files
+   - See [Atlas Stream Processing Connections Docs](https://www.mongodb.com/docs/atlas/atlas-sp/connections/)
+
+### Connection Registry Notes
+
+- The `sample_stream_solar` connection is used for both reading streaming data and writing to collections
+- **Example 00** (`hello_world.json`) works immediately - no external connections needed
+- **Example 01** (`changestream_basic.json`) works immediately and writes to `quickstart.solar_rollup` collection
+- **Example 02** (`changestream_to_kafka.json`) uses `sample_stream_solar` as source, only needs Kafka sink connection
+- **Example 04** (`mongo_to_mongo.json`) reads from the collection created by Example 01 and archives it
+- Examples with Kafka sinks or sources (`02`, `03`, `05`) require you to register your Kafka brokers in the connection registry
+
+### Recommended Learning Path
+
+1. Start with `00_hello_world.json` (ephemeral, no setup)
+2. Run `01_changestream_basic.json` as a persistent processor (creates data for next step)
+3. Once #2 is running, try `04_mongo_to_mongo.json` to read and archive the rollup data
+4. Set up Kafka connections to try the Kafka examples (`02`, `03`, `05`)
 
 ---
 
 ## Examples
 
-### Example 1: Simple Hello World
+### Example 1: Simple Hello World (Ephemeral)
 ```javascript
-// Ephemeral - just test it out
+// Ephemeral - just test it out (no data is persisted)
 const hello = JSON.parse(fs.readFileSync('00_hello_world.json', 'utf8'))
 sp.process(hello.pipeline)
-// Output: { "_id": 2, "ts": "2024-01-01T00:00:00Z", "msg": "hello" }
+// Output: Documents matching "hello" print to console
 ```
 
-### Example 2: Stream Solar Data
+### Example 2: Stream Solar Data to Collection (Persistent)
 ```javascript
-// Watch live solar panel data roll in
+// Create a persistent processor that rolls up solar data
 const solar = JSON.parse(fs.readFileSync('01_changestream_basic.json', 'utf8'))
-sp.process(solar.pipeline)
-// Every 10 seconds, you'll see message counts per device
+sp.createStreamProcessor(solar.name, solar.pipeline)
+sp.changestream_basic.start()
+
+// Every 10 seconds, device message counts are written to quickstart.solar_rollup
+// Check the collection:
+// use quickstart
+// db.solar_rollup.find()
 ```
 
-### Example 3: Kafka Tail (Monitor Topic)
+### Example 3: Archive the Rollup Data (Persistent)
 ```javascript
-// Tail a Kafka topic in real-time
+// This reads from the solar_rollup collection created in Example 2
+const archive = JSON.parse(fs.readFileSync('04_mongo_to_mongo.json', 'utf8'))
+sp.createStreamProcessor(archive.name, archive.pipeline)
+sp.mongo_to_mongo.start()
+
+// Changes to quickstart.solar_rollup are now archived to quickstart.solar_archive
+```
+
+### Example 4: Kafka Tail (Monitor Topic)
+```javascript
+// Tail a Kafka topic in real-time (requires Kafka connection setup)
 const tail = JSON.parse(fs.readFileSync('05_kafka_tail.json', 'utf8'))
 sp.process(tail.pipeline)
 // Press Ctrl+C to stop
 ```
 
-### Example 4: Production Kafka→Mongo Pipeline
+### Example 5: Production Kafka→Mongo Pipeline
 ```javascript
-// Create a persistent processor
+// Create a persistent processor (requires Kafka connection setup)
 const prod = JSON.parse(fs.readFileSync('03_kafka_to_mongo.json', 'utf8'))
 sp.createStreamProcessor(prod.name, prod.pipeline)
 sp.kafka_to_mongo.start()

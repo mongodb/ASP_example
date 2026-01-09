@@ -3,9 +3,7 @@
   "pipeline": [
     {
       "$source": {
-        "connectionName": "solar-telemetry-conn",
-        "db": "solar",
-        "coll": "panels"
+        "connectionName": "sample_stream_solar"
       }
     },
     {

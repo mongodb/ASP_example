@@ -5,12 +5,13 @@
       "$source": {
         "documents": [
           { "_id": 1, "ts": "2024-01-01T00:00:00Z", "msg": "hi" },
-          { "_id": 2, "ts": "2024-01-01T00:00:00Z", "msg": "hello" }
+          { "_id": 2, "ts": "2024-01-01T00:00:00Z", "msg": "hello" },
+          { "_id": 3, "ts": "2024-01-01T00:00:01Z", "msg": "hello world" }
         ]
       }
     },
     {
-      "$match": { "msg": "hello" }
+      "$match": { "msg": { "$regex": "hello" } }
     }
   ]
 }

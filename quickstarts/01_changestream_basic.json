@@ -18,6 +18,18 @@
           }
         ]
       }
+    },
+    {
+      "$merge": {
+        "into": {
+          "connectionName": "sample_stream_solar",
+          "db": "quickstart",
+          "coll": "solar_rollup"
+        },
+        "on": "_id",
+        "whenMatched": "replace",
+        "whenNotMatched": "insert"
+      }
     }
   ]
 }

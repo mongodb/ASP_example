@@ -3,25 +3,26 @@
   "pipeline": [
     {
       "$source": {
-        "connectionName": "cluster0-conn",
-        "db": "inventory",
-        "coll": "parts"
+        "connectionName": "sample_stream_solar",
+        "db": "quickstart",
+        "coll": "solar_rollup"
       }
     },
     {
       "$addFields": {
-        "processedAt": "$$NOW"
+        "archived": true
       }
     },
     {
       "$merge": {
         "into": {
-          "connectionName": "cluster0-conn",
-          "db": "inventory",
-          "coll": "parts_archive"
+          "connectionName": "sample_stream_solar",
+          "db": "quickstart",
+          "coll": "solar_archive"
         },
         "on": "_id",
-        "whenMatched": "replace"
+        "whenMatched": "replace",
+        "whenNotMatched": "insert"
       }
     }
   ]
