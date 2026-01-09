@@ -1,0 +1,20 @@
+{
+  "name": "changestream_to_kafka",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "solar-telemetry-conn",
+        "db": "solar",
+        "coll": "panels"
+      }
+    },
+    {
+      "$emit": {
+        "kafka": {
+          "connectionName": "kafka-out-conn",
+          "topic": "solar_raw"
+        }
+      }
+    }
+  ]
+}

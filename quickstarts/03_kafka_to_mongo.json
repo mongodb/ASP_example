@@ -1,0 +1,35 @@
+{
+  "name": "kafka_to_mongo",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "airplanes",
+        "topic": "airplanes"
+      }
+    },
+    {
+      "$tumblingWindow": {
+        "interval": { "size": 60, "unit": "second" },
+        "pipeline": [
+          {
+            "$group": {
+              "_id": "$ICAO",
+              "views": { "$sum": 1 }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$merge": {
+        "into": {
+          "connectionName": "aircraft_analytics",
+          "db": "analytics",
+          "coll": "flights_1m"
+        },
+        "on": "_id",
+        "whenMatched": "merge"
+      }
+    }
+  ]
+}

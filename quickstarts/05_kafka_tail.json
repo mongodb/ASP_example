@@ -1,0 +1,11 @@
+{
+  "name": "kafka_tail",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "airplanes",
+        "topic": "airplanes"
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "mongo_to_mongo",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "cluster0-conn",
+        "db": "inventory",
+        "coll": "parts"
+      }
+    },
+    {
+      "$addFields": {
+        "processedAt": "$$NOW"
+      }
+    },
+    {
+      "$merge": {
+        "into": {
+          "connectionName": "cluster0-conn",
+          "db": "inventory",
+          "coll": "parts_archive"
+        },
+        "on": "_id",
+        "whenMatched": "replace"
+      }
+    }
+  ]
+}

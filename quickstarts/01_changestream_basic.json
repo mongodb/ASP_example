@@ -1,0 +1,23 @@
+{
+  "name": "changestream_basic",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "sample_stream_solar"
+      }
+    },
+    {
+      "$tumblingWindow": {
+        "interval": { "size": 10, "unit": "second" },
+        "pipeline": [
+          {
+            "$group": {
+              "_id": "$device_id",
+              "msgs": { "$sum": 1 }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
