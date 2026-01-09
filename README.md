@@ -29,13 +29,13 @@ This repository serves as both a the human readable corpus of examples, but also
 
 **Ephemeral (testing/development):**
 ```javascript
-const def = JSON.parse(cat('processor.json'))
+const def = JSON.parse(fs.readFileSync('processor.json', 'utf8'))
 sp.process(def.pipeline)
 ```
 
 **Persistent (production):**
 ```javascript
-const def = JSON.parse(cat('processor.json'))
+const def = JSON.parse(fs.readFileSync('processor.json', 'utf8'))
 sp.createStreamProcessor(def.name, def.pipeline)
 sp[def.name].start()
 ```

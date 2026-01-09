@@ -48,7 +48,7 @@ For quick testing and development, run processors ephemerally (they stop when th
 
 ```javascript
 // 1. Load the processor definition from a JSON file
-const processor = cat('00_hello_world.json')
+const processor = fs.readFileSync('00_hello_world.json', 'utf8')
 
 // 2. Parse the JSON
 const def = JSON.parse(processor)
@@ -60,11 +60,11 @@ sp.process(def.pipeline)
 **Complete Example:**
 ```javascript
 // Load and run the hello world example
-const helloWorld = JSON.parse(cat('00_hello_world.json'))
+const helloWorld = JSON.parse(fs.readFileSync('00_hello_world.json', 'utf8'))
 sp.process(helloWorld.pipeline)
 
 // Or in one line:
-sp.process(JSON.parse(cat('00_hello_world.json')).pipeline)
+sp.process(JSON.parse(fs.readFileSync('00_hello_world.json', 'utf8')).pipeline)
 ```
 
 ### Method 2: Persistent Processors with `sp.createStreamProcessor()`
@@ -73,7 +73,7 @@ For production use, create named processors that run continuously:
 
 ```javascript
 // 1. Load the processor definition
-const processor = JSON.parse(cat('03_kafka_to_mongo.json'))
+const processor = JSON.parse(fs.readFileSync('03_kafka_to_mongo.json', 'utf8'))
 
 // 2. Create a persistent stream processor
 sp.createStreamProcessor(processor.name, processor.pipeline)
@@ -91,7 +91,7 @@ sp[processor.name].drop()    // Delete the processor
 **Complete Example:**
 ```javascript
 // Load the Kafka to Mongo processor
-const kafkaToMongo = JSON.parse(cat('03_kafka_to_mongo.json'))
+const kafkaToMongo = JSON.parse(fs.readFileSync('03_kafka_to_mongo.json', 'utf8'))
 
 // Create it
 sp.createStreamProcessor(kafkaToMongo.name, kafkaToMongo.pipeline)
@@ -172,7 +172,7 @@ Before running these examples, ensure you have:
 ### Example 1: Simple Hello World
 ```javascript
 // Ephemeral - just test it out
-const hello = JSON.parse(cat('00_hello_world.json'))
+const hello = JSON.parse(fs.readFileSync('00_hello_world.json', 'utf8'))
 sp.process(hello.pipeline)
 // Output: { "_id": 2, "ts": "2024-01-01T00:00:00Z", "msg": "hello" }
 ```
@@ -180,7 +180,7 @@ sp.process(hello.pipeline)
 ### Example 2: Stream Solar Data
 ```javascript
 // Watch live solar panel data roll in
-const solar = JSON.parse(cat('01_changestream_basic.json'))
+const solar = JSON.parse(fs.readFileSync('01_changestream_basic.json', 'utf8'))
 sp.process(solar.pipeline)
 // Every 10 seconds, you'll see message counts per device
 ```
@@ -188,7 +188,7 @@ sp.process(solar.pipeline)
 ### Example 3: Kafka Tail (Monitor Topic)
 ```javascript
 // Tail a Kafka topic in real-time
-const tail = JSON.parse(cat('05_kafka_tail.json'))
+const tail = JSON.parse(fs.readFileSync('05_kafka_tail.json', 'utf8'))
 sp.process(tail.pipeline)
 // Press Ctrl+C to stop
 ```
@@ -196,7 +196,7 @@ sp.process(tail.pipeline)
 ### Example 4: Production Kafka→Mongo Pipeline
 ```javascript
 // Create a persistent processor
-const prod = JSON.parse(cat('03_kafka_to_mongo.json'))
+const prod = JSON.parse(fs.readFileSync('03_kafka_to_mongo.json', 'utf8'))
 sp.createStreamProcessor(prod.name, prod.pipeline)
 sp.kafka_to_mongo.start()
 
@@ -237,7 +237,8 @@ sp.kafka_to_mongo.stop()
 
 **Can't load JSON file?**
 - Ensure you're in the quickstarts directory or use full path
-- Use `cat('path/to/file.json')` to read file contents
+- Use `fs.readFileSync('path/to/file.json', 'utf8')` to read file contents
+- mongosh uses Node.js fs module, not legacy `cat()` function
 
 ---
 
