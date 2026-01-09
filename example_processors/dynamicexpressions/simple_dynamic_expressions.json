@@ -1,0 +1,47 @@
+{
+  "name": "simple_dynamic_expressions",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "sample_streaming",
+        "db": "test",
+        "coll": "speed",
+        "config": {
+          "fullDocument": "required",
+          "fullDocumentOnly": true
+        }
+      }
+    },
+    {
+      "$merge": {
+        "into": {
+          "connectionName": "sample_streaming",
+          "db": "test",
+          "coll": {
+            "$switch": {
+              "branches": [
+                {
+                  "case": {
+                    "$expr": {
+                      "$lt": ["$speed", 0]
+                    }
+                  },
+                  "then": "speed_error"
+                },
+                {
+                  "case": {
+                    "$expr": {
+                      "$gte": ["$speed", 100]
+                    }
+                  },
+                  "then": "speed_fast"
+                }
+              ],
+              "default": "speed_normal"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
