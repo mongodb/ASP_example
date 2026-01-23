@@ -1,0 +1,81 @@
+{
+  "name": "generic_api_enrichment",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "YOUR_CONNECTION_NAME",
+        "db": "incoming_data",
+        "coll": "events"
+      }
+    },
+    {
+      "$match": {
+        "user_id": { "$exists": true },
+        "event_type": "user_action"
+      }
+    },
+    {
+      "$https": {
+        "connectionName": "YOUR_HTTPS_CONNECTION_NAME",
+        "method": "POST",
+        "path": "/api/v2/enrich",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "payload": [
+          {
+            "$project": {
+              "_id": 0,
+              "user_id": "$user_id",
+              "event_data": {
+                "type": "$event_type",
+                "timestamp": "$timestamp",
+                "metadata": "$metadata"
+              },
+              "request_id": { "$toString": "$_id" }
+            }
+          }
+        ],
+        "as": "api_enrichment",
+        "onError": "dlq",
+        "config": {
+          "parseJsonStrings": true
+        }
+      }
+    },
+    {
+      "$addFields": {
+        "user_profile": "$api_enrichment.user_profile",
+        "recommendations": "$api_enrichment.recommendations",
+        "risk_score": "$api_enrichment.risk_assessment.score",
+        "processing_status": "enriched",
+        "api_response_time": "$api_enrichment.response_time_ms"
+      }
+    },
+    {
+      "$project": {
+        "api_enrichment": 0
+      }
+    },
+    {
+      "$merge": {
+        "into": {
+          "connectionName": "YOUR_CONNECTION_NAME",
+          "db": "processed_data",
+          "coll": "enriched_events"
+        },
+        "on": ["_id"],
+        "whenMatched": "merge", 
+        "whenNotMatched": "insert"
+      }
+    }
+  ],
+  "options": {
+    "dlq": {
+      "connectionName": "YOUR_CONNECTION_NAME",
+      "db": "processed_data",
+      "coll": "api_enrichment_dlq"
+    }
+  }
+}

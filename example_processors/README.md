@@ -72,6 +72,9 @@ Like the race_leaderboard but designed for Change Stream Sources
 ### reservationUpdater
 Example application that manages passenger lists based on reservation actions of passenger
 
+### http_operator
+Examples demonstrating the `$https` operator for making external HTTP API calls to enrich streaming data. Includes weather enrichment using GET requests and generic API integration using POST requests with JSON payloads.
+
 ### simple_solar
 Uses the built in solar data source to perform validation filtering of iot solar devices, and windowing of the average wattage created before updating devices in a Mongo Collection
 

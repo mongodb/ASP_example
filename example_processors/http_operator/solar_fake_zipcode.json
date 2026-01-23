@@ -1,0 +1,103 @@
+{
+  "name": "solar_data_with_fake_zipcode_and_solar_irradiance",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "sample_stream_solar",
+        "timeField": { "$dateFromString": { "dateString": "$timestamp" }}
+      }
+    },
+    {
+      "$match": {
+        "device_id": { "$exists": true },
+        "obs": { "$exists": true }
+      }
+    },
+    {
+      "$https": {
+        "connectionName": "YOUR_FAKERAPI_CONNECTION_NAME",
+        "method": "GET",
+        "path": "/api/v2/addresses?_quantity=1&_locale=en_US&_country_code=US",
+        "as": "fake_address",
+        "onError": "dlq",
+        "config": {
+          "parseJsonStrings": true
+        }
+      }
+    },
+    {
+      "$addFields": {
+        "location": {
+          "zipcode": { 
+            "$arrayElemAt": ["$fake_address.data.zipcode", 0] 
+          },
+          "city": { 
+            "$arrayElemAt": ["$fake_address.data.city", 0] 
+          },
+          "latitude": {
+            "$arrayElemAt": ["$fake_address.data.latitude", 0]
+          },
+          "longitude": {
+            "$arrayElemAt": ["$fake_address.data.longitude", 0]
+          }
+        }
+      }
+    },
+    {
+      "$https": {
+        "connectionName": "YOUR_NREL_API_CONNECTION_NAME",
+        "method": "GET",
+        "path": {
+          "$concat": [
+            "/api/solar/solar_resource/v1.json?lat=",
+            { "$toString": "$location.latitude" },
+            "&lon=",
+            { "$toString": "$location.longitude" }
+          ]
+        },
+        "as": "solar_resource_data",
+        "onError": "dlq",
+        "config": {
+          "parseJsonStrings": true
+        }
+      }
+    },
+    {
+      "$addFields": {
+        "solar_irradiance": {
+          "avg_ghi_annual": "$solar_resource_data.outputs.avg_ghi.annual",
+          "avg_dni_annual": "$solar_resource_data.outputs.avg_dni.annual",
+          "avg_lat_tilt_annual": "$solar_resource_data.outputs.avg_lat_tilt.annual"
+        },
+        "data_sources": {
+          "location": "FakerAPI",
+          "solar_data": "NREL"
+        }
+      }
+    },
+    {
+      "$project": {
+        "fake_address": 0,
+        "solar_resource_data": 0
+      }
+    },
+    {
+      "$merge": {
+        "into": {
+          "connectionName": "YOUR_CONNECTION_NAME",
+          "db": "solar_data",
+          "coll": "solar_readings_with_irradiance"
+        },
+        "whenMatched": "merge",
+        "whenNotMatched": "insert"
+      }
+    }
+  ],
+  "options": {
+    "dlq": {
+      "connectionName": "YOUR_CONNECTION_NAME",
+      "db": "solar_data",
+      "coll": "solar_irradiance_dlq"
+    }
+  }
+}
