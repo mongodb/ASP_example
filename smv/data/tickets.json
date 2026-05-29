@@ -1,0 +1,220 @@
+[
+  {
+    "status": "open",
+    "priority": "P1",
+    "created_at": { "$date": "2026-05-11T08:02:00Z" },
+    "tags": ["billing", "enterprise"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-11T08:02:00Z" },
+        "type": "customer_message",
+        "author": "jane.doe@acme.com",
+        "body": "We've been double-charged on our April invoice. This is a critical issue for our finance team."
+      }
+    ]
+  },
+  {
+    "status": "in_progress",
+    "priority": "P1",
+    "created_at": { "$date": "2026-05-11T06:15:00Z" },
+    "tags": ["auth", "enterprise", "outage"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-11T06:15:00Z" },
+        "type": "customer_message",
+        "author": "ops@globex.io",
+        "body": "SSO login is completely broken for all users in our org. We cannot access Atlas at all."
+      },
+      {
+        "timestamp": { "$date": "2026-05-11T06:22:00Z" },
+        "type": "support_response",
+        "author": "agent.rivera@support.com",
+        "body": "I'm escalating this immediately and looping in our auth team."
+      },
+      {
+        "timestamp": { "$date": "2026-05-11T06:25:00Z" },
+        "type": "status_change",
+        "from": "open",
+        "to": "in_progress"
+      }
+    ]
+  },
+  {
+    "status": "open",
+    "priority": "P1",
+    "created_at": { "$date": "2026-05-11T09:45:00Z" },
+    "tags": ["data-loss", "enterprise"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-11T09:45:00Z" },
+        "type": "customer_message",
+        "author": "dba@initech.com",
+        "body": "A collection appears to have been dropped during last night's migration window. We need help recovering it urgently."
+      }
+    ]
+  },
+  {
+    "status": "open",
+    "priority": "P2",
+    "created_at": { "$date": "2026-05-10T14:30:00Z" },
+    "tags": ["performance", "atlas-search"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-10T14:30:00Z" },
+        "type": "customer_message",
+        "author": "dev@umbrella.com",
+        "body": "Our Atlas Search queries are returning results in 4-6 seconds. This started after the index rebuild yesterday."
+      },
+      {
+        "timestamp": { "$date": "2026-05-10T15:10:00Z" },
+        "type": "support_response",
+        "author": "agent.chen@support.com",
+        "body": "Can you share the explain plan output for one of the slow queries?"
+      },
+      {
+        "timestamp": { "$date": "2026-05-10T15:45:00Z" },
+        "type": "customer_message",
+        "author": "dev@umbrella.com",
+        "body": "Attached. The index scan looks normal to me but I'm not sure what to look for."
+      }
+    ]
+  },
+  {
+    "status": "in_progress",
+    "priority": "P2",
+    "created_at": { "$date": "2026-05-10T11:00:00Z" },
+    "tags": ["billing"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-10T11:00:00Z" },
+        "type": "customer_message",
+        "author": "finance@papyrus.com",
+        "body": "We downgraded our cluster tier last week but are still being billed at the old rate."
+      },
+      {
+        "timestamp": { "$date": "2026-05-10T11:30:00Z" },
+        "type": "support_response",
+        "author": "agent.kim@support.com",
+        "body": "I can see the tier change in our logs. Looping in the billing team to issue a credit."
+      },
+      {
+        "timestamp": { "$date": "2026-05-10T11:32:00Z" },
+        "type": "status_change",
+        "from": "open",
+        "to": "in_progress"
+      }
+    ]
+  },
+  {
+    "status": "open",
+    "priority": "P2",
+    "created_at": { "$date": "2026-05-11T07:20:00Z" },
+    "tags": ["connectivity", "vpc"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-11T07:20:00Z" },
+        "type": "customer_message",
+        "author": "infra@bluth.co",
+        "body": "Intermittent connection timeouts to our Atlas cluster from our VPC. Happens every 20-30 minutes."
+      }
+    ]
+  },
+  {
+    "status": "in_progress",
+    "priority": "P2",
+    "created_at": { "$date": "2026-05-09T16:00:00Z" },
+    "tags": ["terraform", "atlas-admin-api"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-09T16:00:00Z" },
+        "type": "customer_message",
+        "author": "platform@vandelay.io",
+        "body": "The MongoDB Atlas Terraform provider is returning a 409 conflict when we try to create a new project. Our pipeline is blocked."
+      },
+      {
+        "timestamp": { "$date": "2026-05-09T16:45:00Z" },
+        "type": "support_response",
+        "author": "agent.rivera@support.com",
+        "body": "This looks like a known race condition in provider v1.14. Can you try pinning to v1.13.2 as a workaround while we investigate?"
+      },
+      {
+        "timestamp": { "$date": "2026-05-09T17:10:00Z" },
+        "type": "customer_message",
+        "author": "platform@vandelay.io",
+        "body": "Pinning to v1.13.2 unblocked us for now. Still need the fix in the latest version."
+      },
+      {
+        "timestamp": { "$date": "2026-05-09T17:12:00Z" },
+        "type": "status_change",
+        "from": "open",
+        "to": "in_progress"
+      }
+    ]
+  },
+  {
+    "status": "open",
+    "priority": "P3",
+    "created_at": { "$date": "2026-05-08T10:00:00Z" },
+    "tags": ["docs", "atlas-search"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-08T10:00:00Z" },
+        "type": "customer_message",
+        "author": "dev@reynholm.io",
+        "body": "The docs for fuzzy matching in Atlas Search don't mention whether maxEdits applies per token or per field. Can someone clarify?"
+      }
+    ]
+  },
+  {
+    "status": "open",
+    "priority": "P3",
+    "created_at": { "$date": "2026-05-09T13:15:00Z" },
+    "tags": ["feature-request"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-09T13:15:00Z" },
+        "type": "customer_message",
+        "author": "product@massive-dynamic.com",
+        "body": "Is there a way to receive a webhook when an Atlas Stream Processor enters an error state? Currently we have to poll stats()."
+      },
+      {
+        "timestamp": { "$date": "2026-05-09T14:00:00Z" },
+        "type": "support_response",
+        "author": "agent.chen@support.com",
+        "body": "Not currently — I've logged this as a feature request with the product team."
+      }
+    ]
+  },
+  {
+    "status": "resolved",
+    "priority": "P3",
+    "created_at": { "$date": "2026-05-07T09:00:00Z" },
+    "tags": ["connection", "driver"],
+    "updates": [
+      {
+        "timestamp": { "$date": "2026-05-07T09:00:00Z" },
+        "type": "customer_message",
+        "author": "dev@wernham-hogg.com",
+        "body": "Getting MongoServerSelectionError on startup. Using Node.js driver 6.3."
+      },
+      {
+        "timestamp": { "$date": "2026-05-07T09:20:00Z" },
+        "type": "support_response",
+        "author": "agent.kim@support.com",
+        "body": "Can you confirm your IP is on the Atlas access list and share your connection string (redact credentials)?"
+      },
+      {
+        "timestamp": { "$date": "2026-05-07T09:35:00Z" },
+        "type": "customer_message",
+        "author": "dev@wernham-hogg.com",
+        "body": "That was it — my IP wasn't on the list. All working now."
+      },
+      {
+        "timestamp": { "$date": "2026-05-07T09:36:00Z" },
+        "type": "status_change",
+        "from": "open",
+        "to": "resolved"
+      }
+    ]
+  }
+]

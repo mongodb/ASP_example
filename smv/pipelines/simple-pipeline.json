@@ -1,0 +1,108 @@
+{
+  "name": "queue_stats_processor",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "YOUR_CONNECTION_NAME",
+        "db": "support",
+        "coll": "support_tickets",
+        "config": {
+          "fullDocument": "updateLookup",
+          "fullDocumentBeforeChange": "whenAvailable"
+        }
+      }
+    },
+    {
+      "$addFields": {
+        "_delta": {
+          "$switch": {
+            "branches": [
+              {
+                "case": {
+                  "$and": [
+                    { "$eq": ["$operationType", "insert"] },
+                    { "$eq": ["$fullDocument.status", "open"] }
+                  ]
+                },
+                "then": 1
+              },
+              {
+                "case": {
+                  "$and": [
+                    { "$eq": ["$operationType", "update"] },
+                    { "$eq": ["$fullDocumentBeforeChange.status", "open"] },
+                    { "$eq": ["$fullDocument.status", "resolved"] }
+                  ]
+                },
+                "then": -1
+              },
+              {
+                "case": {
+                  "$and": [
+                    { "$eq": ["$operationType", "delete"] },
+                    { "$eq": ["$fullDocumentBeforeChange.status", "open"] }
+                  ]
+                },
+                "then": -1
+              }
+            ],
+            "default": 0
+          }
+        },
+        "_priority": {
+          "$ifNull": ["$fullDocument.priority", "$fullDocumentBeforeChange.priority"]
+        }
+      }
+    },
+    {
+      "$match": { "_delta": { "$ne": 0 } }
+    },
+    {
+      "$tumblingWindow": {
+        "interval": { "size": 1, "unit": "second" },
+        "pipeline": [
+          {
+            "$group": {
+              "_id": "$_priority",
+              "open_count": { "$sum": "$_delta" },
+              "windowStart": { "$first": { "$meta": "stream.window.start" } }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$merge": {
+        "into": {
+          "connectionName": "YOUR_CONNECTION_NAME",
+          "db": "support",
+          "coll": "queue_stats"
+        },
+        "whenMatched": [
+          {
+            "$set": {
+              "open_count": {
+                "$cond": [
+                  { "$gt": ["$$new.windowStart", { "$ifNull": ["$lastWindowStart", { "$date": "1970-01-01T00:00:00Z" }] }] },
+                  { "$add": ["$open_count", "$$new.open_count"] },
+                  "$open_count"
+                ]
+              },
+              "lastWindowStart": {
+                "$max": [{ "$ifNull": ["$lastWindowStart", { "$date": "1970-01-01T00:00:00Z" }] }, "$$new.windowStart"]
+              }
+            }
+          }
+        ],
+        "whenNotMatched": "insert"
+      }
+    }
+  ],
+  "options": {
+    "dlq": {
+      "connectionName": "YOUR_CONNECTION_NAME",
+      "db": "support",
+      "coll": "queue_stats_dlq"
+    }
+  }
+}
