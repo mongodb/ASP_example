@@ -165,7 +165,7 @@ In your **data plane** session, run the `collMod` from `setup-SCRATCH.mongodb.js
 In your **control plane** session:
 
 ```js
-const def = JSON.parse(fs.readFileSync('smv/pipelines/simple-pipeline.json', 'utf8'));
+const def = JSON.parse(fs.readFileSync('example_processors/smv/pipelines/simple-pipeline.json', 'utf8'));
 sp.createStreamProcessor(def.name, def.pipeline, def.options);
 sp[def.name].start();
 ```
@@ -177,7 +177,7 @@ sp[def.name].start();
 In a second **data plane** session:
 
 ```js
-load("smv/watch.mongodb.js");
+load("example_processors/smv/watch.mongodb.js");
 ```
 
 This polls `queue_stats` every 2 seconds and prints a live bar chart:
@@ -195,10 +195,10 @@ In a third session, run one of the activity scripts:
 
 ```js
 // Simple events only (open, resolve, respond, delete):
-load("smv/activity.mongodb.js");
+load("example_processors/smv/activity.mongodb.js");
 
 // Includes priority escalations:
-load("smv/activity-escalation.mongodb.js");
+load("example_processors/smv/activity-escalation.mongodb.js");
 ```
 
 Each event prints what happened and what change to expect in `queue_stats`. Cross-reference with the `watch` output to verify the processor is responding correctly.
@@ -234,7 +234,7 @@ Then reload the pipeline and start again. Do not restart the processor without d
 ## File reference
 
 ```
-smv/
+example_processors/smv/
 ├── streaming-materialized-views.md         # Conceptual overview
 ├── README.md                               # This file
 ├── setup-SCRATCH.mongodb.js                # Setup and lifecycle command reference

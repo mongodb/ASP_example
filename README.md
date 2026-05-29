@@ -63,4 +63,3 @@ The structure for this repository is:
 * [Terraform](/terraform) examples, explain Terraform usage with Atlas Stream Processing.
 * [DB examples](/db) are examples for the MongoDB database in relation to Atlas Stream Processing.
 * [Demo](/demo) is various self-contained demos.
-* [SMV](/smv) is a streaming materialized view example using a support queue dashboard.

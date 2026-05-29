@@ -42,7 +42,7 @@ db.getCollectionInfos({ name: "support_tickets" })[0].options;
 // =============================================================================
 
 // Create the processor (does not start processing yet):
-const def = JSON.parse(fs.readFileSync('smv/pipelines/simple-pipeline.json', 'utf8'));
+const def = JSON.parse(fs.readFileSync('example_processors/smv/pipelines/simple-pipeline.json', 'utf8'));
 sp.createStreamProcessor(def.name, def.pipeline, def.options);
 
 // Confirm it was registered:
