@@ -18,6 +18,8 @@ For conceptual background and a discussion of when streaming materialized views 
 
 Tickets carry an embedded `updates` array — an append-only log of every message, response, and status change on the case. Entries are polymorphic: a customer message and a status change have different fields. This is the natural fit for MongoDB's document model that would require separate tables and joins in a relational system.
 
+For example:
+
 ```json
 {
   "_id":       ObjectId("..."),
@@ -48,6 +50,12 @@ Tickets carry an embedded `updates` array — an append-only log of every messag
 }
 ```
 
+`data/tickets.json` contains 10 sample tickets across P1, P2, and P3 priorities if you want to browse the shape or load them into a separate collection for reference:
+
+```bash
+mongoimport --uri "<connection-string>" --db support --collection sample_tickets --jsonArray --file data/tickets.json
+```
+
 ### `queue_stats` document shape
 
 One document per priority level. `open_count` is a running total maintained by the stream processor — it is never recomputed from scratch.
@@ -60,124 +68,108 @@ One document per priority level. `open_count` is a running total maintained by t
 
 ---
 
-## The Two Pipelines
+## The Pipeline
 
-Two pipeline variants are provided, demonstrating progressively more complex delta logic.
-
-### Pipeline 1: Simple (`pipelines/simple-pipeline.json`)
-
-Handles three event types:
+`pipelines/escalation-pipeline.mongodb.js` handles four event types:
 
 | Event | Delta | `operationType` |
 |---|---|---|
 | New open ticket inserted | +1 to priority bucket | `insert` |
 | Open ticket resolved | -1 from priority bucket | `update` |
 | Open ticket deleted (spam/duplicate) | -1 from priority bucket | `delete` |
+| Priority escalated (e.g. P2 → P1) | -1 old bucket, +1 new bucket | `update` |
 
-Uses a scalar `_delta` field. A `$match` stage filters events with `_delta = 0` before they reach the window.
-
-### Pipeline 2: With Escalation (`pipelines/escalation-pipeline.json`)
-
-Adds a fourth event type — priority escalation (e.g. P2 → P1) — which must affect two priority buckets simultaneously from a single change stream event.
-
-| Event | Delta | `operationType` |
-|---|---|---|
-| New open ticket inserted | +1 to priority bucket | `insert` |
-| Open ticket resolved | -1 from priority bucket | `update` |
-| Open ticket deleted (spam/duplicate) | -1 from priority bucket | `delete` |
-| Priority escalated | -1 old bucket, +1 new bucket | `update` |
-
-Instead of a scalar `_delta`, this pipeline computes an `_adjustments` array. `$unwind` fans escalation events into two documents — one per affected bucket. Noise events produce an empty array that `$unwind` drops silently, eliminating the need for a separate `$match` stage.
+The escalation case is the interesting one — a single change stream event must affect two priority buckets simultaneously. Instead of a scalar `_delta`, this pipeline computes an `_adjustments` array. `$unwind` fans escalation events into two documents — one per affected bucket. Noise events produce an empty array that `$unwind` drops silently, eliminating the need for a separate `$match` stage.
 
 ### Pipeline structure
 
-Both pipelines share the same stage sequence:
-
 ```
-$source → $addFields → [$unwind] → $tumblingWindow ($group) → $merge
+$source → $addFields (_adjustments) → $unwind → $tumblingWindow ($group) → $merge
 ```
 
-The `$merge` stage uses an additive `whenMatched` pipeline to accumulate deltas into the running total rather than replacing it:
-
-```js
-whenMatched: [{ $set: { open_count: { $add: ["$open_count", "$$new.open_count"] } } }]
-```
+The `$merge` stage uses an additive `whenMatched` pipeline to accumulate deltas into the running total rather than replacing it, with a `lastWindowStart` high-water mark to guard against at-least-once replay.
 
 ---
 
 ## Prerequisites
 
-**1. Enable change stream pre- and post-images on `support_tickets`.**
+**1. Register an ASP connection.**
 
-Required before starting the processor. Without it, `$fullDocumentBeforeChange` is null on update and delete events, and the `-1` delta will never fire.
+In your stream processing workspace, register the connection to your Atlas cluster and note its name. Replace `CONNECTION_NAME` in the pipeline files with the registered connection name. This connection is used for both the `$source` and `$merge` stages.
 
-Run in a data plane mongosh session (see `setup-SCRATCH.mongodb.js`):
+**2. Three sessions.**
 
-```js
-use('support');
-db.runCommand({
-  collMod: "support_tickets",
-  changeStreamPreAndPostImages: { enabled: true }
-});
-```
+You need three mongosh sessions running simultaneously. Connection strings for both types are available via the **Connect** button in the Atlas UI — on your cluster for DB sessions, and on your stream processing instance for the ASP session.
 
-**2. Register an ASP connection.**
+- **ASP session** — connect to your stream processing instance:
+  ```bash
+  mongosh "mongodb://<asp-host>/?streamProcessingInstance=<name>"
+  ```
+  Used for `sp.*` commands to manage the processor.
 
-In your stream processing instance, register a connection named `MyAtlas` (or update `CONNECTION_NAME` in the pipeline file) pointing at your Atlas cluster. This connection is used for both the `$source` and `$merge` stages.
+- **DB session (watch)** — connect to your Atlas cluster:
+  ```bash
+  mongosh "mongodb+srv://<user>:<pass>@<cluster-host>/"
+  ```
+  Used to run `watch.mongodb.js` and monitor `queue_stats`.
 
-**3. Two connection planes.**
-
-ASP management commands (`sp.*`) require a control plane connection string:
-```
-mongodb://<asp-host>/?streamProcessingInstance=<name>
-```
-
-Data plane commands (`db.*`) use a standard Atlas connection string. You can use both in a single mongosh session by constructing an explicit data plane connection:
-
-```js
-const dataPlane = new Mongo("mongodb+srv://<user>:<pass>@<cluster-host>/");
-const db = dataPlane.getDB("support");
-```
-
-The default `db` in a control plane session points at the ASP instance, not your cluster — so the explicit `new Mongo()` is required if you want both in the same session.
+- **DB session (activity)** — a second connection to your Atlas cluster. Used to run the activity simulator.
 
 ---
 
 ## Running the Demo
 
-### Step 1 — Load the initial data
+> **All commands below assume you have `cd`'d into the `smv` directory:**
+> ```bash
+> cd example_processors/smv
+> ```
 
-The sample data file contains 10 support tickets across P1, P2, and P3 priorities in various states.
+### Step 1 — Create the collection and load tickets
 
-```bash
-mongoimport \
-  --uri "<connection-string>" \
-  --db support \
-  --collection support_tickets \
-  --jsonArray \
-  --file streaming/data/tickets.json
-```
-
-### Step 2 — Enable pre/post images and start the processor
-
-In your **data plane** session, run the `collMod` from `setup-SCRATCH.mongodb.js`.
-
-In your **control plane** session:
+In a **DB session**:
 
 ```js
-const def = JSON.parse(fs.readFileSync('example_processors/smv/pipelines/simple-pipeline.json', 'utf8'));
-sp.createStreamProcessor(def.name, def.pipeline, def.options);
-sp[def.name].start();
+use('support');
+db.createCollection("support_tickets", {
+  changeStreamPreAndPostImages: { enabled: true }
+});
 ```
 
-`queue_stats` starts empty and accumulates from this point forward. Note: `initialSync` is not compatible with windowing stages in ASP — pre-existing tickets are not counted in the initial view state.
+Pre/post images must be enabled before the processor starts. Creating the collection explicitly ensures you control when the change stream begins.
 
-### Step 3 — Watch the view
-
-In a second **data plane** session:
+Then load the sample tickets:
 
 ```js
-load("example_processors/smv/watch.mongodb.js");
+db.support_tickets.insertMany(JSON.parse(fs.readFileSync('data/tickets.json', 'utf8')));
+```
+
+### Step 2 — Seed queue_stats
+
+Run a one-time aggregation to compute the initial open ticket counts from the loaded tickets:
+
+```js
+load("seed.mongodb.js");
+```
+
+This creates `queue_stats` as an on-demand materialized view — a point-in-time snapshot of open ticket counts by priority. It will go stale the moment tickets change.
+
+### Step 3 — Start the processor
+
+In your **ASP session**:
+
+```js
+load("pipelines/escalation-pipeline.mongodb.js");
+sp.queue_stats_escalation.start();
+```
+
+Starting the processor converts `queue_stats` from an on-demand materialized view into a streaming materialized view — kept current continuously as tickets are inserted, resolved, escalated, and deleted.
+
+### Step 4 — Watch the view
+
+In your **DB session**:
+
+```js
+load("watch.mongodb.js");
 ```
 
 This polls `queue_stats` every 2 seconds and prints a live bar chart:
@@ -189,61 +181,77 @@ This polls `queue_stats` every 2 seconds and prints a live bar chart:
   P3  ████████████ 12
 ```
 
-### Step 4 — Generate activity
+### Step 5 — Generate activity
 
-In a third session, run one of the activity scripts:
+In a second **DB session**:
 
 ```js
-// Simple events only (open, resolve, respond, delete):
-load("example_processors/smv/activity.mongodb.js");
-
-// Includes priority escalations:
-load("example_processors/smv/activity-escalation.mongodb.js");
+load("activity/escalation-activity.js");
 ```
 
 Each event prints what happened and what change to expect in `queue_stats`. Cross-reference with the `watch` output to verify the processor is responding correctly.
 
-### Step 5 — Monitor processor health
+### Step 6 — Monitor processor health
 
-In the control plane session:
+In your **ASP session**:
 
 ```js
-sp.queue_stats_processor.stats();
+sp.queue_stats_escalation.stats();
 ```
 
 `dlqMessageCount` should remain 0. Any value above zero means a document failed processing — check the `queue_stats_dlq` collection.
 
-### Resetting between runs
+---
 
-To start fresh (e.g., when switching between pipelines):
+## Resetting to Initial State
+
+Two scripts handle the reset — run them in order.
+
+In your **ASP session**:
 
 ```js
-// Control plane:
-sp.queue_stats_processor.stop();
-sp.queue_stats_processor.drop();
-
-// Data plane:
-use('support');
-db.queue_stats.drop();
+load("reset-asp.mongodb.js");
 ```
 
-Then reload the pipeline and start again. Do not restart the processor without dropping `queue_stats` — counts will accumulate on top of the previous run.
+In your **DB session**:
+
+```js
+load("reset-db.mongodb.js");
+```
+
+This stops and drops whichever SMV processor is running, then drops `support_tickets`, `queue_stats`, and `queue_stats_dlq`. After the reset, follow Step 1 to start a new run. Do not restart the processor against an existing `queue_stats` collection — counts will accumulate on top of the previous run.
+
+---
+
+## Simplified Variant
+
+`pipelines/simple-pipeline.mongodb.js` handles three event types (insert, resolve, delete) and omits the escalation case. It uses a scalar `_delta` field and a `$match` stage to drop noise events, making it easier to follow as an introduction to the pattern. Use `activity/simple-activity.js` with this pipeline.
+
+In your **ASP session**:
+
+```js
+load("pipelines/simple-pipeline.mongodb.js");
+sp.queue_stats_simple.start();
+```
 
 ---
 
 ## File reference
 
 ```
-example_processors/smv/
+smv/
 ├── streaming-materialized-views.md         # Conceptual overview
 ├── README.md                               # This file
-├── setup-SCRATCH.mongodb.js                # Setup and lifecycle command reference
-├── watch.mongodb.js                        # Live queue_stats monitor (data plane)
-├── activity.mongodb.js                     # Event simulator — simple
-├── activity-escalation.mongodb.js          # Event simulator — with escalations
+├── seed.mongodb.js                         # Seed queue_stats from existing tickets (DB session)
+├── reset-asp.mongodb.js                    # Stop and drop the stream processor (ASP session)
+├── reset-db.mongodb.js                     # Drop all collections (DB session)
+├── watch.mongodb.js                        # Live queue_stats monitor (DB session)
+├── activity/
+│   ├── simple-activity.js                  # Event simulator — simple
+│   └── escalation-activity.js              # Event simulator — with escalations
 ├── data/
 │   └── tickets.json                        # 10 sample support tickets
 └── pipelines/
-    ├── simple-pipeline.json                # Pipeline 1: insert, resolve, delete
-    └── escalation-pipeline.json            # Pipeline 2: + priority escalation
+    ├── simple-pipeline.mongodb.js          # Pipeline 1: insert, resolve, delete
+    └── escalation-pipeline.mongodb.js      # Pipeline 2: + priority escalation
 ```
