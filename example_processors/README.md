@@ -94,4 +94,43 @@ Using a reducer to join 2 event documents completely together without accessing 
 Two processors that work together to handle creation and updates, or deletes. The processors read the change stream $source of an entire database and output to a target collection a super document where each field of the document is the collection name it came from. Deletes work to detect that the source collection has deleted the document and removes it from the respective super document. 
 
 ### toplevel_arrayJSONExplode
-2 Solutions for when a single record is a top level array json rather then a top level object according to the JSON RFC. Turns each array object into its own document for processing. 
+2 Solutions for when a single record is a top level array json rather then a top level object according to the JSON RFC. Turns each array object into its own document for processing.
+
+### canonical_processor_definition
+Reference template showing the canonical `{name, pipeline, options}` JSON structure for all Atlas Stream Processor definitions, including DLQ configuration and usage examples.
+
+### doubleProjection
+Demonstrates creating multiple projection formats from a single event stream and routing them to different Kafka topics based on dynamically set metadata.
+
+### filters
+Filters null-valued fields from documents by converting them to arrays, filtering, and reconstructing objects with only non-null properties.
+
+### functions_UDF
+Shows how to execute custom JavaScript functions within a stream processor pipeline to perform calculations not available through standard aggregation operators.
+
+### iceberg
+Writes stream data to Apache Iceberg tables in S3 with AWS Glue catalog integration, handling both insert and delete operations.
+
+### initialSync
+Replicates documents from a MongoDB collection to another while handling delete operations during both initial sync and ongoing change stream processing.
+
+### kinesis
+Sources from and emits stream data to AWS Kinesis streams, with configuration for output format, partition keys, and required IAM permissions.
+
+### largeDocFilter
+Filters out documents that exceed 16.79 MB by routing oversized documents to a Dead Letter Queue while passing normal-sized documents through.
+
+### lookup
+Enriches stream data by joining with reference collections using `$lookup`, with examples covering simple lookups, percolated lookups, and parallel partition-by patterns.
+
+### replaceArrayEle
+Updates array elements within embedded arrays by filtering out old entries and concatenating new ones based on matching criteria, without a `$lookup`.
+
+### s3Sink
+Writes stream data to S3 buckets with automatic date-based path rotation (year/month/day/hour/minute) for organized data partitioning.
+
+### sessionWindow
+Groups streaming events into sessions based on time gaps and enriches them with reference data, accumulating related chunks within bounded time windows.
+
+### smv
+Implements a streaming materialized view that maintains real-time open ticket counts by priority from a support ticket change stream, with two pipeline variants: simple (insert/resolve/delete) and with priority escalation. 
