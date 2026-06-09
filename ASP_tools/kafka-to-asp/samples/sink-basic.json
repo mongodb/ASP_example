@@ -1,0 +1,21 @@
+{
+    "connector.class": "MongoDbAtlasSink",
+    "name": "kafka-to-inventory",
+
+    "kafka.api.key": "YOUR_KAFKA_API_KEY",
+    "kafka.api.secret": "YOUR_KAFKA_API_SECRET",
+
+    "connection.user": "YOUR_ATLAS_USERNAME",
+    "connection.password": "YOUR_ATLAS_PASSWORD",
+
+    "topics": "prod.warehouse.inventory",
+
+    "database": "warehouse",
+    "collection": "inventory",
+
+    "consumer.override.auto.offset.reset": "earliest",
+
+    "max.poll.interval.ms": "300000",
+
+    "errors.tolerance": "all"
+}

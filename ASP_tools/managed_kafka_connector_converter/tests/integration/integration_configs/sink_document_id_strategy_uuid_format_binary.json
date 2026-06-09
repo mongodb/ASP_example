@@ -1,6 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.document.id.strategy.uuid.format.binary",
-    "document.id.strategy.uuid.format": "Binary",
-    "shouldFail": true
-}

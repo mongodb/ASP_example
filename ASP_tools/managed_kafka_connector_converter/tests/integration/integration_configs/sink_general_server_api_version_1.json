@@ -1,5 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.general.server.api.version.1",
-    "server.api.version": "1"
-}

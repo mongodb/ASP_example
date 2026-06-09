@@ -1,5 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.general.connection.host.custom",
-    "connection.host": "custom-cluster.mongodb.net"
-}

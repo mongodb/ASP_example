@@ -1,0 +1,24 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "orders-to-kafka",
+
+    "kafka.api.key": "YOUR_KAFKA_API_KEY",
+    "kafka.api.secret": "YOUR_KAFKA_API_SECRET",
+
+    "connection.user": "YOUR_ATLAS_USERNAME",
+    "connection.password": "YOUR_ATLAS_PASSWORD",
+
+    "database": "shop",
+    "collection": "orders",
+
+    "topic.prefix": "prod",
+    "topic.separator": ".",
+
+    "change.stream.full.document": "updateLookup",
+
+    "startup.mode": "copy_existing",
+
+    "output.json.format": "ExtendedJson",
+
+    "errors.tolerance": "all"
+}
