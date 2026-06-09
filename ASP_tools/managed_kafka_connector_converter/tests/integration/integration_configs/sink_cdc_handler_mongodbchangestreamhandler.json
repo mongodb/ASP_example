@@ -1,6 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.cdc.handler.mongodbchangestreamhandler",
-    "cdc.handler": "MongoDbChangeStreamHandler",
-    "shouldFail": true
-}

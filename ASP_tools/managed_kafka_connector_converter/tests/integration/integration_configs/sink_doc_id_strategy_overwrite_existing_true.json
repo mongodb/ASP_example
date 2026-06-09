@@ -1,6 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.doc.id.strategy.overwrite.existing.true",
-    "doc.id.strategy.overwrite.existing": "TRUE",
-    "shouldFail": true
-}

@@ -1,0 +1,30 @@
+{
+    "connector.class": "MongoDbAtlasSource",
+    "name": "events-to-kafka-oidc",
+
+    "kafka.auth.mode": "SERVICE_ACCOUNT",
+    "kafka.api.key": "YOUR_OIDC_CLIENT_ID",
+    "kafka.api.secret": "YOUR_OIDC_CLIENT_SECRET",
+
+    "connection.user": "YOUR_ATLAS_USERNAME",
+    "connection.password": "YOUR_ATLAS_PASSWORD",
+
+    "database": "analytics",
+    "collection": "events",
+
+    "topic.prefix": "prod",
+    "topic.separator": ".",
+
+    "change.stream.full.document": "updateLookup",
+    "change.stream.full.document.before.change": "whenAvailable",
+
+    "publish.full.document.only": "true",
+
+    "pipeline": "[{\"$match\": {\"fullDocument.status\": {\"$in\": [\"active\", \"pending\"]}}}]",
+
+    "startup.mode": "latest",
+
+    "producer.override.compression.type": "snappy",
+
+    "errors.tolerance": "all"
+}

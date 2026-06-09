@@ -1,6 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.input.key.format.bytes",
-    "input.key.format": "BYTES",
-    "shouldFail": true
-}

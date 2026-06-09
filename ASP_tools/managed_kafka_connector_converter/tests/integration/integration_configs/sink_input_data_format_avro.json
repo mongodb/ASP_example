@@ -1,6 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.input.data.format.avro",
-    "input.data.format": "AVRO",
-    "shouldFail": true
-}

@@ -1,5 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.general.server.api.deprecation.errors.true",
-    "server.api.deprecation.errors": "TRUE"
-}

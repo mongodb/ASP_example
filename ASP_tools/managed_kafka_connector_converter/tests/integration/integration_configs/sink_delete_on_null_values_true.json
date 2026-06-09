@@ -1,6 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.delete.on.null.values.true",
-    "delete.on.null.values": "TRUE",
-    "shouldFail": true
-}

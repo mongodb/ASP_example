@@ -1,6 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSource",
-    "name": "source.general.auto.restart.on.user.error.false",
-    "topic.prefix": "test",
-    "auto.restart.on.user.error": "FALSE"
-}

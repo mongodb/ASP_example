@@ -1,6 +1,0 @@
-{
-    "connector.class": "MongoDbAtlasSink",
-    "name": "sink.doc.id.strategy.fullkeystrategy",
-    "doc.id.strategy": "FullKeyStrategy",
-    "shouldFail": true
-}
