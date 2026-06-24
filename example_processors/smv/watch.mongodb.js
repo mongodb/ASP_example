@@ -1,10 +1,13 @@
 // watch.js — Live queue_stats monitor
 //
-// Polls the queue_stats materialized view every 2 seconds and prints the
-// current open ticket count per priority. Run this in a DATA PLANE mongosh
-// session alongside activity.js in a second terminal.
+// Polls queue_stats every 2 seconds and prints the current open ticket count
+// per priority. queue_stats is a regular MongoDB collection maintained by the
+// Streaming Materialized View Pattern — this is a plain find() query, not a
+// special ASP API. It can be indexed, queried, and used as the backing store
+// for an application like any other collection.
 //
-//   mongosh "mongodb+srv://<user>:<pass>@<cluster-host>/" --file streaming/watch.js
+// Run in a DB session alongside activity.js in a second terminal:
+//   mongosh "mongodb+srv://<user>:<pass>@<cluster-host>/"
 
 use('support');
 

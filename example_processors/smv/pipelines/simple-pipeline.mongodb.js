@@ -1,6 +1,7 @@
-// Streaming Materialized View: Open Ticket Count per Priority (Simple)
+// Streaming Materialized View Pattern: Open Ticket Count per Priority (Simple)
 //
-// Maintains a real-time count of open support tickets per priority in
+// A minimal implementation of the Streaming Materialized View Pattern that
+// maintains a running count of open support tickets per priority in
 // the queue_stats collection. Three events are handled:
 //
 //   - New open ticket inserted              → open_count for that priority increments
