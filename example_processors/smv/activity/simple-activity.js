@@ -1,12 +1,12 @@
-// activity.js — Support queue activity simulator
+// simple-activity.js — Support queue activity simulator
 //
-// Runs an infinite loop that continuously generates realistic ticket lifecycle
-// events against the support_tickets collection. Each iteration either opens a
-// new ticket, resolves an existing one, adds a support response (noise), or
-// physically deletes a ticket identified as spam or a duplicate.
+// Generates ticket lifecycle events to exercise the Streaming Materialized View
+// Pattern implementation in simple-pipeline.mongodb.js. Each iteration either
+// opens a new ticket, resolves an existing one, adds a support response (noise),
+// or physically deletes a ticket identified as spam or a duplicate.
 //
-// Run this in a DATA PLANE mongosh session alongside watch.js in a second terminal.
-//   mongosh "mongodb+srv://<user>:<pass>@<cluster-host>/" --file streaming/activity.js
+// Run in a DB session alongside watch.mongodb.js in a second terminal:
+//   mongosh "mongodb+srv://<user>:<pass>@<cluster-host>/"
 
 use ('support');
 
@@ -141,7 +141,7 @@ function deleteTicket() {
 
 // -- Loop -------------------------------------------------------------------
 
-print("activity.mongodb.js running — Ctrl+C to stop\n");
+print("simple-activity.js running — Ctrl+C to stop\n");
 
 while (true) {
   const roll = Math.random();
