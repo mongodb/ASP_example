@@ -14,4 +14,4 @@
   variable "workspace_a_name"   { default = "asp-workspace-a" }
   variable "workspace_b_name"   { default = "asp-workspace-b" }
   variable "workspace_a_region" { default = "US_EAST_1" }
-  variable "workspace_b_region" { default = "US_EAST
+  variable "workspace_b_region" { default = "US_EAST_1" }
