@@ -16,9 +16,12 @@ sp.name.start()
 
 
 #mod processor to restart changestream at specific time
-#method 1 
+#method 1 (start 10 minutes ago)
 sp.stuff.stop()
-sp.stuff.start({options: {startAtOperationTime: new Date("2025-06-12T02:00:00.000Z")}})
+sp.stuff.start({
+    startAtOperationTime: new Date(Date.now() - 600000),
+    resumeFromCheckpoint: false
+  });
 
 #method 2
 sp.stuff.stop()
