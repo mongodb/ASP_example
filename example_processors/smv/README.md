@@ -1,8 +1,8 @@
 # Streaming Materialized View: Support Queue Dashboard
 
-This example demonstrates a streaming materialized view built with Atlas Stream Processing (ASP). A `queue_stats` collection is continuously maintained in near real-time as support tickets are opened, resolved, escalated, and deleted — with no manual refresh required.
+This example demonstrates the Streaming Materialized View Pattern using Atlas Stream Processing (ASP). A `queue_stats` collection is continuously maintained in near real-time as support tickets are opened, resolved, escalated, and deleted — with no manual refresh required.
 
-For conceptual background and a discussion of when streaming materialized views are preferable to the incremental approach, see [streaming-materialized-views.md](streaming-materialized-views.md).
+For conceptual background and a discussion of when this pattern is preferable to the on-demand approach, see [streaming-materialized-views.md](streaming-materialized-views.md).
 
 ---
 
@@ -58,7 +58,7 @@ mongoimport --uri "<connection-string>" --db support --collection sample_tickets
 
 ### `queue_stats` document shape
 
-One document per priority level. `open_count` is a running total maintained by the stream processor — it is never recomputed from scratch.
+One document per priority level. `open_count` is a running total maintained by the stream processor — a key characteristic of this pattern. It is never recomputed from scratch; only the incremental change from each event is applied.
 
 ```json
 { "_id": "P1", "open_count": 3 }
@@ -151,7 +151,7 @@ Run a one-time aggregation to compute the initial open ticket counts from the lo
 load("seed.mongodb.js");
 ```
 
-This creates `queue_stats` as an on-demand materialized view — a point-in-time snapshot of open ticket counts by priority. It will go stale the moment tickets change.
+This seeds `queue_stats` using the on-demand materialized view approach — a point-in-time snapshot of open ticket counts by priority. It will go stale the moment tickets change.
 
 ### Step 3 — Start the processor
 
@@ -162,7 +162,7 @@ load("pipelines/escalation-pipeline.mongodb.js");
 sp.queue_stats_escalation.start();
 ```
 
-Starting the processor converts `queue_stats` from an on-demand materialized view into a streaming materialized view — kept current continuously as tickets are inserted, resolved, escalated, and deleted.
+Starting the processor converts `queue_stats` from a point-in-time snapshot into a continuously maintained implementation of the Streaming Materialized View Pattern — kept current as tickets are inserted, resolved, escalated, and deleted.
 
 ### Step 4 — Watch the view
 
@@ -225,7 +225,7 @@ This stops and drops whichever SMV processor is running, then drops `support_tic
 
 ## Simplified Variant
 
-`pipelines/simple-pipeline.mongodb.js` handles three event types (insert, resolve, delete) and omits the escalation case. It uses a scalar `_delta` field and a `$match` stage to drop noise events, making it easier to follow as an introduction to the pattern. Use `activity/simple-activity.js` with this pipeline.
+`pipelines/simple-pipeline.mongodb.js` is a simpler implementation of the same pattern. It handles three event types (insert, resolve, delete) and omits the escalation case. It uses a scalar `_delta` field and a `$match` stage to drop noise events, making it easier to follow as an introduction to the pipeline design. Use `activity/simple-activity.js` with this pipeline.
 
 In your **ASP session**:
 
@@ -242,6 +242,7 @@ sp.queue_stats_simple.start();
 smv/
 ├── streaming-materialized-views.md         # Conceptual overview
 ├── README.md                               # This file
+├── TODO.md                                 # Planned extensions
 ├── seed.mongodb.js                         # Seed queue_stats from existing tickets (DB session)
 ├── reset-asp.mongodb.js                    # Stop and drop the stream processor (ASP session)
 ├── reset-db.mongodb.js                     # Drop all collections (DB session)

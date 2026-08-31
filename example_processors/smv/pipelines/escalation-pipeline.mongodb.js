@@ -1,6 +1,7 @@
-// Streaming Materialized View: Open Ticket Count per Priority (with Escalation)
+// Streaming Materialized View Pattern: Open Ticket Count per Priority (with Escalation)
 //
-// Extends simple-pipeline.mongodb.js to handle priority escalations (e.g. P2 → P1).
+// An implementation of the Streaming Materialized View Pattern that extends
+// simple-pipeline.mongodb.js to handle priority escalations (e.g. P2 → P1).
 // A single change stream event for an escalation must affect two priority buckets
 // simultaneously — decrement the old, increment the new. This requires a different
 // approach to the delta logic.
