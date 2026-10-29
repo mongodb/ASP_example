@@ -1,0 +1,99 @@
+{
+  "name": "${ASP_PROCESSOR_NAME}",
+  "pipeline": [
+    {
+      "$source": {
+        "connectionName": "${ASP_ATLAS_CONNECTION}",
+        "db": "${DB_NAME}",
+        "coll": "${COLLECTION_NAME}",
+        "timeField": {
+          "$toDate": "$fullDocument.envelope.initiatedTimeStamp"
+        },
+        "config": {
+          "fullDocument": "updateLookup",
+          "pipeline": [
+            {
+              "$match": {
+                "operationType": "insert"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "$hoppingWindow": {
+        "boundary": "processingTime",
+        "interval": {
+          "size": "${ASP_WINDOW_SECONDS}",
+          "unit": "second"
+        },
+        "hopSize": {
+          "size": "${ASP_HOP_SECONDS}",
+          "unit": "second"
+        },
+        "pipeline": [
+          {
+            "$group": {
+              "_id": "$fullDocument.payload.value.actionedFields.CUSTOMER_ID",
+              "events": {
+                "$push": {
+                  "occurredAt": "$fullDocument.envelope.initiatedTimeStamp",
+                  "group": "$fullDocument.envelope.eventGroup.eventGroupType",
+                  "type": "$fullDocument.envelope.eventType",
+                  "purpose": "$fullDocument.envelope.eventPurposeType",
+                  "description": "$fullDocument.payload.value.actionedFields.INTRVW_DESC.string",
+                  "note": "$fullDocument.payload.value.actionedFields.NOTE_DETAILS.string"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$externalFunction": {
+        "connectionName": "${ASP_LAMBDA_CONNECTION}",
+        "functionName": "${ASP_LAMBDA_FUNCTION}",
+        "execution": "sync",
+        "as": "llmResult",
+        "parallelism": "${ASP_PARALLELISM}",
+        "payload": [
+          {
+            "$project": {
+              "_id": 0,
+              "cin": "$_id",
+              "events": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$project": {
+        "_id": 0,
+        "cin": "$llmResult.cin",
+        "lifeEvents": "$llmResult.lifeEvents"
+      }
+    },
+    {
+      "$merge": {
+        "into": {
+          "connectionName": "${ASP_ATLAS_CONNECTION}",
+          "db": "${INSIGHTS_DB}",
+          "coll": "${INSIGHTS_COLLECTION}"
+        },
+        "whenMatched": "keepExisting",
+        "whenNotMatched": "insert"
+      }
+    }
+  ],
+  "tier": "${ASP_TIER}",
+  "options": {
+    "dlq": {
+      "connectionName": "${ASP_ATLAS_CONNECTION}",
+      "db": "${ASP_DLQ_DB}",
+      "coll": "${ASP_DLQ_COLLECTION}"
+    }
+  }
+}

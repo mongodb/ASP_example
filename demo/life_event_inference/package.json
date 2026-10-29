@@ -1,0 +1,18 @@
+{
+  "name": "life_event_inference",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "node webui/server.js",
+    "render:processor": "node scripts/render-processor.js",
+    "test": "node --test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "mongodb": "^7.6.0"
+  }
+}

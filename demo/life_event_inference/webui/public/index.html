@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Customer Intelligence Hub · Events Platform</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2 3 7v2h18V7l-9-5Zm-7 9v7h2v-7H5Zm4 0v7h2v-7H9Zm4 0v7h2v-7h-2Zm4 0v7h2v-7h-2ZM3 20v2h18v-2H3Z"/></svg>
+        </span>
+        <div>
+          <div class="brand-title">Customer Intelligence Hub</div>
+          <div class="brand-sub">Events Platform · Retail &amp; Commercial Banking</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="pill" id="conn-pill"><span class="dot"></span><span id="conn-text">Connecting…</span></span>
+        <span class="muted small" id="source-info"></span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="panel customers">
+        <h2>Customer book</h2>
+        <p class="muted small">Select a customer to view their unified interaction history and run a live activity simulation.</p>
+        <ul id="customer-list" class="customer-list"></ul>
+
+        <div class="sim-controls">
+          <button id="run-btn" class="btn primary" disabled>Simulate customer activity</button>
+          <button id="stop-btn" class="btn ghost" hidden>Stop</button>
+          <div class="progress" id="progress" hidden><div class="progress-bar" id="progress-bar"></div></div>
+          <div class="muted small" id="sim-text"></div>
+        </div>
+
+        <div class="legend">
+          <h3>Channel legend</h3>
+          <div><span class="chip g-PAYMENTS">Payments</span></div>
+          <div><span class="chip g-LENDING">Lending</span></div>
+          <div><span class="chip g-CUSTOMER_SERVICING">Servicing</span></div>
+          <div><span class="chip g-ACCOUNT_SERVICING">Account</span></div>
+        </div>
+      </aside>
+
+      <section class="panel flow-panel">
+        <div class="panel-head">
+          <h2>Event-driven AI pipeline</h2>
+          <span class="muted small">MongoDB Atlas → Atlas Stream Processing → AWS Lambda (LLM) → MongoDB Atlas</span>
+        </div>
+        <div class="flow" id="flow">
+          <div class="node" id="node-channels">
+            <div class="node-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v10H4V4Zm-2 14h20v2H2v-2Zm6-2h8v1H8v-1Z"/></svg>
+            </div>
+            <div class="node-title">Banking channels</div>
+            <div class="node-sub">Branch · Mobile · Phone · Payments</div>
+            <div class="node-stat" id="stat-channels">Idle</div>
+          </div>
+          <div class="link" id="link-1"></div>
+          <div class="node atlas" id="node-source">
+            <div class="node-icon leaf">
+              <svg viewBox="0 0 24 24"><path d="M12.6 2.2c-.3-.5-.9-.5-1.2 0C9.6 5 6 9.3 6 13.6c0 3.2 2.3 5.8 5.3 6.3l.3 2.1h.8l.3-2.1c3-.5 5.3-3.1 5.3-6.3 0-4.3-3.6-8.6-5.4-11.4Z"/></svg>
+            </div>
+            <div class="node-title">MongoDB Atlas</div>
+            <div class="node-sub mono" id="source-ns">ces_events</div>
+            <div class="node-stat" id="stat-source">0 events this session</div>
+          </div>
+          <div class="link" id="link-2"></div>
+          <div class="node asp" id="node-asp">
+            <div class="node-icon">
+              <svg viewBox="0 0 24 24"><path d="M3 6h12v2H3V6Zm0 5h18v2H3v-2Zm0 5h8v2H3v-2Zm14-9 4 2-4 2V7Z"/></svg>
+            </div>
+            <div class="node-title">Atlas Stream Processing</div>
+            <div class="node-sub mono">$source → $hoppingWindow(CIN) → $externalFunction</div>
+            <div class="node-stat" id="stat-asp">Waiting for events</div>
+          </div>
+          <div class="link" id="link-3"></div>
+          <div class="node lambda" id="node-lambda">
+            <div class="node-icon">
+              <svg viewBox="0 0 24 24"><path d="M5 20 11 4h2l6 16h-2.2l-1.6-4.4H8.8L7.2 20H5Zm4.5-6.4h5L12 6.8l-2.5 6.8Z"/></svg>
+            </div>
+            <div class="node-title">AWS Lambda</div>
+            <div class="node-sub">PII-stripped LLM life-event inference</div>
+            <div class="node-stat" id="stat-lambda">Idle</div>
+          </div>
+          <div class="link" id="link-4"></div>
+          <div class="node atlas" id="node-sink">
+            <div class="node-icon leaf">
+              <svg viewBox="0 0 24 24"><path d="M12.6 2.2c-.3-.5-.9-.5-1.2 0C9.6 5 6 9.3 6 13.6c0 3.2 2.3 5.8 5.3 6.3l.3 2.1h.8l.3-2.1c3-.5 5.3-3.1 5.3-6.3 0-4.3-3.6-8.6-5.4-11.4Z"/></svg>
+            </div>
+            <div class="node-title">MongoDB Atlas</div>
+            <div class="node-sub mono" id="sink-ns">ces_events_llm_output</div>
+            <div class="node-stat" id="stat-sink">0 intelligent events</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel timeline-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Unified interaction timeline</h2>
+            <span class="muted small">Use case 1 · Customer telemetry</span>
+          </div>
+          <div class="filters" id="filters"></div>
+        </div>
+        <div class="customer-banner" id="customer-banner">Select a customer to begin.</div>
+        <pre class="query mono" id="query-snippet" hidden></pre>
+        <ol class="timeline" id="timeline"></ol>
+      </section>
+
+      <section class="panel insight-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Life event analysis</h2>
+            <span class="muted small">Use case 2 · Intelligent events</span>
+          </div>
+        </div>
+        <div id="analysis"><div class="empty">No customer selected.</div></div>
+        <h3 class="sub-head">Previous analyses</h3>
+        <ul class="history" id="insight-history"></ul>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" hidden></div>
+    <script src="/app.js"></script>
+  </body>
+</html>

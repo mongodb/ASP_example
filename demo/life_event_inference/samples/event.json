@@ -1,0 +1,142 @@
+{
+  "schemaId": "https://schemaregistry.example.com/subjects/cdna.cdcenrich.all.ces-events-value/versions/latest/schema",
+  "eventUniqueId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "envelope": {
+    "schemaId": "envelope/stdevent-envelope-v3.0",
+    "eventType": "DATA_MANAGEMENT",
+    "eventPurposeType": "DATA_CHANGE",
+    "sourceSystemId": "CDNA_CDC_CDB_NWB",
+    "initiatedBy": "TCWEVSG_EVENT_STG",
+    "initiatedTimeStamp": "2025-08-20T14:22:05.312Z",
+    "eventGroup": {
+      "eventGroupType": "CUSTOMER_DATA_CHANGE"
+    },
+    "eventClassification": [
+      {
+        "classificationName": "CDC_ACTION_TYPE",
+        "classificationValue": "INSERT"
+      },
+      {
+        "classificationName": "CDNA_CDC",
+        "classificationValue": "CDNA_CDC_EVENT"
+      },
+      {
+        "classificationName": "STAGE_SEQUENCE_NO",
+        "classificationValue": "1"
+      },
+      {
+        "classificationName": "STAGE_TYPE",
+        "classificationValue": "IN1"
+      },
+      {
+        "classificationName": "STAGE_STEP",
+        "classificationValue": "M"
+      }
+    ],
+    "payloadIdentification": [
+      {
+        "identificationCategory": "EVENT",
+        "identificationType": "EVENT_REFERENCE",
+        "identificationValue": "60124587"
+      },
+      {
+        "identificationCategory": "PARTY",
+        "identificationType": "CIN",
+        "identificationValue": "2001450032"
+      },
+      {
+        "identificationCategory": "BRANCH",
+        "identificationType": "SORT_CODE",
+        "identificationValue": "601122"
+      },
+      {
+        "identificationCategory": "ACCOUNT",
+        "identificationType": "BBAN",
+        "identificationValue": "712345"
+      }
+    ]
+  },
+  "payload": {
+    "schemaId": "https://schemaregistry.example.com/subjects/cdna.cdcenrich.all.ces-events-value/versions/latest/schema",
+    "value": {
+      "actionedFields": {
+        "EVENT_REF": 60124587,
+        "CUSTOMER_ID": 2001450032,
+        "BRANCH_NUMBER": 601122,
+        "CUSTOMER_ACCOUNT_NUMBER": 712345,
+        "STAGE_SEQUENCE_NO": 1,
+        "CREATE_TIMESTAMP": "2025-08-20T14:22:05.1000000000",
+        "STAGE_TYPE": "IN1",
+        "STAGE_STEP": "M",
+        "PAYMENT_TYPE": null,
+        "STAFF_CONTACT_TEL": {
+          "string": "john.smith@example.com"
+        },
+        "STAFF_CONTACT_NAME": {
+          "string": "John Smith"
+        },
+        "BENEFICIARY": null,
+        "ITEM_DESC_CODE": null,
+        "INTRVW_NOTE_TYPE": {
+          "string": "GN"
+        },
+        "INTRVW_DESC": {
+          "string": "Account review completed"
+        },
+        "OVERDRAFT_STATUS": null,
+        "OVERDRAFT_EXP_DATE": null,
+        "NOTE_DETAILS": {
+          "string": "Customer called regarding direct debit setup"
+        },
+        "STAGE_EXPIRY_DATE": "2028-08-20",
+        "STAGE_STATUS": "A",
+        "CREATE_USERID": {
+          "string": "SYSTEM_USER_01"
+        }
+      },
+      "rawCDCEvent": {
+        "EVENT_REF": 60124587,
+        "STAGE_SEQUENCE_NO": 1,
+        "CREATE_TIMESTAMP": "2025-08-20T14:22:05.1000000000",
+        "STAGE_TYPE": "IN1",
+        "STAGE_STEP": "M",
+        "PAYMENT_TYPE": null,
+        "STAFF_CONTACT_TEL": {
+          "string": "john.smith@example.com"
+        },
+        "STAFF_CONTACT_NAME": {
+          "string": "John Smith"
+        },
+        "INTRVW_NOTE_TYPE": {
+          "string": "GN"
+        },
+        "INTRVW_DESC": {
+          "string": "Account review completed"
+        },
+        "NOTE_DETAILS": {
+          "string": "Customer called regarding direct debit setup"
+        },
+        "STAGE_EXPIRY_DATE": "2028-08-20",
+        "STAGE_STATUS": "A",
+        "CREATE_USERID": {
+          "string": "SYSTEM_USER_01"
+        },
+        "SRC_SYS_ID": {
+          "string": "CDB"
+        },
+        "SRC_INGEST_MAP": {
+          "string": "TCWEVSG_EVENT_STG"
+        },
+        "SRC_EVT_TYP_FLG": {
+          "string": "IN"
+        },
+        "SRC_SYS_INST_ID": {
+          "string": "NWB"
+        },
+        "SRC_EXTRACT_TS": {
+          "string": "2025-08-20T14:22:05.1500000000"
+        }
+      }
+    }
+  }
+}
