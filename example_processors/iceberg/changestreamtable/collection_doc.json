@@ -1,0 +1,15 @@
+[
+  {
+    _id: ObjectId('6ad7c930c2496d2763140a92'),
+    sku: 'SKU-504',
+    name: 'Calibration Weight',
+    qty: 1,
+    price: Decimal128('2.500'),
+    active: true,
+    history: [
+      { qty: 10, at: ISODate('2026-09-01T00:00:00.000Z') },
+      { qty: 4, at: ISODate('2026-10-01T00:00:00.000Z') }
+    ],
+    created: ISODate('2026-10-20T10:03:00.000Z')
+  }
+]
