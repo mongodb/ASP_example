@@ -1,0 +1,74 @@
+[
+  {
+    "Name": "_id",
+    "Type": "string",
+    "Parameters": {
+      "iceberg.field.current": "true",
+      "iceberg.field.id": "1",
+      "iceberg.field.optional": "false"
+    }
+  },
+  {
+    "Name": "operationtype",
+    "Type": "string",
+    "Parameters": {
+      "iceberg.field.current": "true",
+      "iceberg.field.id": "2",
+      "iceberg.field.optional": "true"
+    }
+  },
+  {
+    "Name": "clustertime",
+    "Type": "timestamp",
+    "Parameters": {
+      "iceberg.field.current": "true",
+      "iceberg.field.id": "3",
+      "iceberg.field.optional": "true"
+    }
+  },
+  {
+    "Name": "fulldocument",
+    "Type": "string",
+    "Parameters": {
+      "iceberg.field.current": "true",
+      "iceberg.field.id": "4",
+      "iceberg.field.optional": "true"
+    }
+  },
+  {
+    "Name": "ns",
+    "Type": "string",
+    "Parameters": {
+      "iceberg.field.current": "true",
+      "iceberg.field.id": "5",
+      "iceberg.field.optional": "true"
+    }
+  },
+  {
+    "Name": "documentkey",
+    "Type": "string",
+    "Parameters": {
+      "iceberg.field.current": "true",
+      "iceberg.field.id": "6",
+      "iceberg.field.optional": "true"
+    }
+  },
+  {
+    "Name": "walltime",
+    "Type": "timestamp",
+    "Parameters": {
+      "iceberg.field.current": "true",
+      "iceberg.field.id": "7",
+      "iceberg.field.optional": "true"
+    }
+  },
+  {
+    "Name": "updatedescription",
+    "Type": "string",
+    "Parameters": {
+      "iceberg.field.current": "true",
+      "iceberg.field.id": "8",
+      "iceberg.field.optional": "true"
+    }
+  }
+]
