@@ -1,9 +1,9 @@
-// activity-escalation.mongodb.js — Support queue activity simulator with escalations
+// escalation-activity.js — Support queue activity simulator with escalations
 //
-// Extends activity.mongodb.js with a fourth event type: priority escalation.
-// An escalation updates an open ticket's priority to the next level up and
-// should cause queue_stats to decrement the old priority bucket and increment
-// the new one simultaneously.
+// Generates ticket lifecycle events to exercise the Streaming Materialized View
+// Pattern implementation in escalation-pipeline.mongodb.js. Includes a fourth
+// event type — priority escalation — which should cause queue_stats to decrement
+// the old priority bucket and increment the new one simultaneously.
 //
 // Event distribution:
 //   32% — open new ticket       (queue_stats increments)
